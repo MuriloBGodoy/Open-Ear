@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LiveMode } from '../components/LiveMode';
 import { FileMode, type IncomingAudio } from '../components/FileMode';
-import { getLibraryFile } from '../lib/db';
+import { getLibraryFile, type LibraryFolder } from '../lib/db';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { IconGlobe } from '../components/Icons';
 import { AUDIO_LANGUAGES, type AudioLanguage } from '../i18n';
@@ -21,9 +21,18 @@ interface TranscriberProps {
   /** Id de um áudio da biblioteca, quando o usuário chegou pelo botão de lá. */
   fileId?: string | null;
   onFileConsumed: () => void;
+  /** Destinos possíveis ao guardar o áudio que acabou de ser transcrito. */
+  folders: LibraryFolder[];
+  onFoldersChanged: () => void;
 }
 
-export function Transcriber({ onSaved, fileId, onFileConsumed }: TranscriberProps) {
+export function Transcriber({
+  onSaved,
+  fileId,
+  onFileConsumed,
+  folders,
+  onFoldersChanged,
+}: TranscriberProps) {
   const { t } = useTranslation();
   const { audioLanguage, setAudioLanguage } = useSettings();
   const [mode, setMode] = useState<'live' | 'file'>(fileId ? 'file' : 'live');
@@ -94,7 +103,7 @@ export function Transcriber({ onSaved, fileId, onFileConsumed }: TranscriberProp
 
       <div id={`panel-${mode}`} role="tabpanel" aria-labelledby={`tab-${mode}`} className="stack">
         {mode === 'live' ? (
-          <LiveMode onSaved={onSaved} />
+          <LiveMode onSaved={onSaved} folders={folders} onFoldersChanged={onFoldersChanged} />
         ) : (
           <FileMode
             onSaved={onSaved}
@@ -103,6 +112,8 @@ export function Transcriber({ onSaved, fileId, onFileConsumed }: TranscriberProp
               setIncoming(null);
               onFileConsumed();
             }}
+            folders={folders}
+            onFoldersChanged={onFoldersChanged}
           />
         )}
       </div>

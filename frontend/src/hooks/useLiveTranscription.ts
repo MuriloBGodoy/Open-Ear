@@ -10,8 +10,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LiveCapture } from '../lib/liveCapture';
+import { concatWav } from '../lib/audio';
 import { transcribe } from '../lib/api';
 import { useSettings, whisperLanguage } from '../context/SettingsContext';
+
+/**
+ * Teto de áudio retido em memória, em bytes.
+ *
+ * O WAV 16 bits mono a 16 kHz gasta 1,9 MB por minuto de FALA (os silêncios o
+ * VAD já descarta), então 96 MB dão perto de 50 minutos de conversa. Acima
+ * disso a aba começa a correr risco real em celular, e travar o app do usuário
+ * para preservar uma gravação que ele talvez nem queira salvar é o pior negócio
+ * possível: a transcrição é o produto, o áudio é o bônus.
+ *
+ * Estourou, para de guardar e AVISA — recortar em silêncio seria entregar uma
+ * gravação que mente sobre a própria duração.
+ */
+const MAX_RETAINED_AUDIO_BYTES = 96 * 1024 * 1024;
 
 export interface CaptionEntry {
   seq: number;
@@ -32,9 +47,23 @@ export function useLiveTranscription() {
   const [speaking, setSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  /** Bytes de áudio guardados. Zero = não há o que oferecer para salvar. */
+  const [audioBytes, setAudioBytes] = useState(0);
+  /** A gravação bateu no teto e está incompleta — a UI precisa dizer isso. */
+  const [audioCapped, setAudioCapped] = useState(false);
 
   const captureRef = useRef<LiveCapture | null>(null);
   const seqRef = useRef(0);
+  /**
+   * Os WAV de cada segmento, na ordem em que foram capturados.
+   *
+   * Ficam num ref e não em estado porque nada na tela depende do conteúdo deles
+   * — só de EXISTIREM, que é o que `hasAudio` diz. Guardá-los em estado faria a
+   * lista inteira ser recriada a cada fala, num componente que já rerenderiza a
+   * cada segmento transcrito.
+   */
+  const segmentsRef = useRef<Blob[]>([]);
+  const retainedBytesRef = useRef(0);
   /** Últimas falas transcritas, usadas como prompt de contexto pro Whisper. */
   const contextRef = useRef<string>('');
   /**
@@ -61,6 +90,16 @@ export function useLiveTranscription() {
   const handleSegment = useCallback(
     async (wav: Blob, durationSeconds: number) => {
       const seq = seqRef.current++;
+
+      // Guarda ANTES de transcrever: o áudio é bom mesmo quando a API falha, e
+      // uma sessão sem rede ainda pode virar arquivo salvo na biblioteca.
+      if (retainedBytesRef.current + wav.size <= MAX_RETAINED_AUDIO_BYTES) {
+        segmentsRef.current.push(wav);
+        retainedBytesRef.current += wav.size;
+        setAudioBytes(retainedBytesRef.current);
+      } else {
+        setAudioCapped(true);
+      }
 
       setEntries((prev) => [
         ...prev,
@@ -144,7 +183,17 @@ export function useLiveTranscription() {
     setElapsedSeconds(0);
     seqRef.current = 0;
     contextRef.current = '';
+    segmentsRef.current = [];
+    retainedBytesRef.current = 0;
+    setAudioBytes(0);
+    setAudioCapped(false);
   }, []);
+
+  /**
+   * Monta a gravação inteira num WAV só. Não limpa nada: quem salva pode querer
+   * salvar de novo noutra pasta, e é `reset` que decide quando a sessão acaba.
+   */
+  const buildRecording = useCallback(() => concatWav(segmentsRef.current), []);
 
   // Solta o microfone se o componente sair de cena com a captura ligada.
   useEffect(() => {
@@ -172,5 +221,8 @@ export function useLiveTranscription() {
     reset,
     fullText,
     setError,
+    audioBytes,
+    audioCapped,
+    buildRecording,
   };
 }

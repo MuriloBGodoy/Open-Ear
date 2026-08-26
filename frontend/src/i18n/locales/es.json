@@ -71,13 +71,13 @@
     "count": "{{count}} transcripción",
     "count_plural": "{{count}} transcripciones",
     "deleteLabel": "Eliminar \"{{title}}\"",
-    "found": "{{count}} transcripción encontrada",
-    "found_plural": "{{count}} transcripciones encontradas",
     "groupToday": "Hoy",
     "groupYesterday": "Ayer",
     "group7": "Últimos 7 días",
     "group30": "Últimos 30 días",
-    "groupOlder": "Más antiguas"
+    "groupOlder": "Más antiguas",
+    "found_one": "{{count}} transcripción encontrada",
+    "found_other": "{{count}} transcripciones encontradas"
   },
   "library": {
     "title": "Biblioteca",
@@ -98,7 +98,24 @@
     "queued": "En cola",
     "openTranscript": "Abrir transcripción",
     "noneQueued": "Ningún archivo esperando en la cola.",
-    "noneDone": "Ningún archivo transcrito todavía."
+    "noneDone": "Ningún archivo transcrito todavía.",
+    "folders": "Carpetas",
+    "newFolder": "Nueva carpeta",
+    "newFolderHint": "Agrupa audios por tema",
+    "folderNamePlaceholder": "Nombre de la carpeta",
+    "createFolder": "Crear",
+    "rename": "Renombrar",
+    "deleteFolder": "Eliminar carpeta",
+    "backToRoot": "Todas las carpetas",
+    "folderSubtitle": "Los audios guardados en esta carpeta.",
+    "addToFolder": "Añadir a «{{name}}»",
+    "audioCount_one": "{{count}} audio",
+    "audioCount_other": "{{count}} audios",
+    "loose": "Sueltos",
+    "inFolder": "Audios de la carpeta",
+    "folderEmpty": "Esta carpeta aún está vacía. Añade audios o arrástralos aquí.",
+    "noneLoose": "Ningún audio suelto: todos están en carpetas.",
+    "moveLabel": "Mover «{{name}}» a otra carpeta"
   },
   "settings": {
     "title": "Ajustes",
@@ -139,5 +156,12 @@
     "micDenied": "Necesitamos permiso del micrófono para subtitular. Habilita el acceso e inténtalo de nuevo.",
     "micFailed": "No se pudo acceder al micrófono.",
     "fileOpenFailed": "No pudimos abrir ese archivo de audio. Prueba MP3, WAV, M4A u OGG."
+  },
+  "save": {
+    "keepAudio": "Guardar el audio en la biblioteca",
+    "destination": "Dónde",
+    "loose": "Suelto en la biblioteca",
+    "recordingName": "Grabación en vivo — {{date}}",
+    "audioCapped": "La grabación superó el límite de memoria: el audio guardado llega hasta donde cupo. La transcripción está completa."
   }
 }

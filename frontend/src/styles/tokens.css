@@ -133,6 +133,29 @@
   --c-glass-bg: rgb(255 255 255 / 0.72);
   --c-glass-border: rgb(0 114 143 / 0.18);
 
+  /**
+   * AURORA — a lavagem de cor que fica ATRÁS de tudo.
+   *
+   * São duas manchas radiais fixas no fundo da janela, e nenhum texto assenta
+   * direto sobre elas: todo conteúdo legível mora num cartão opaco ou
+   * semiopaco por cima. Por isso a aurora não entra na régua de contraste — ela
+   * nunca é o fundo de um par texto/superfície.
+   *
+   * No tema claro ela é quase nada de propósito. A doutrina deste arquivo já
+   * dizia que brilho ciano sobre fundo claro só suja o contraste; a aurora não
+   * é exceção, é o mesmo ornamento em escala maior.
+   */
+  --c-aurora-1: rgb(0 176 220 / 0.1);
+  --c-aurora-2: rgb(0 114 143 / 0.06);
+  --c-aurora-3: rgb(85 210 241 / 0.05);
+
+  /**
+   * Desfoque do vidro. Alto o bastante para a aurora virar cor difusa por trás
+   * do cartão em vez de mancha reconhecível — se a mancha for legível através do
+   * vidro, ela compete com o texto que está em cima.
+   */
+  --glass-blur: 14px;
+
   /* ===========================================================================
    * ESPAÇAMENTO — escala 4px. Densidade folgada: a pessoa lê em movimento.
    * ========================================================================= */
@@ -177,6 +200,7 @@
   --r-md: 14px;
   --r-lg: 20px;
   --r-xl: 28px;
+  --r-2xl: 34px; /* cartão de pasta e painel de palco: a forma mais macia da tela */
   --r-pill: 999px;
 
   --shadow-sm: 0 1px 2px rgb(11 20 33 / 0.06), 0 1px 3px rgb(11 20 33 / 0.08);
@@ -251,6 +275,18 @@
   --c-glass-bg: rgb(36 49 65 / 0.55);
   --c-glass-border: rgb(150 229 249 / 0.16);
 
+  /**
+   * Aqui a aurora existe de verdade. Sobre o near-black ela SOMA luz — o mesmo
+   * argumento que já valia para o glow, agora em escala de tela inteira. É o que
+   * dá a profundidade da referência sem custar um ponto de contraste, porque
+   * continua sem nada legível assentado diretamente sobre ela.
+   */
+  --c-aurora-1: rgb(0 176 220 / 0.2);
+  --c-aurora-2: rgb(24 188 228 / 0.13);
+  --c-aurora-3: rgb(85 210 241 / 0.08);
+
+  --glass-blur: 18px;
+
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
   --shadow-md: 0 8px 28px rgb(0 0 0 / 0.55), 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-glow: 0 0 0 1px rgb(24 188 228 / 0.45), 0 6px 32px rgb(0 176 220 / 0.28);
@@ -274,6 +310,12 @@
     --c-glass-border: var(--c-border-strong);
     --c-glow: transparent;
     --shadow-glow: 0 0 0 3px var(--c-focus);
+
+    /* A aurora é o ornamento mais difuso da tela: some primeiro. */
+    --c-aurora-1: transparent;
+    --c-aurora-2: transparent;
+    --c-aurora-3: transparent;
+    --glass-blur: 0px;
   }
 }
 

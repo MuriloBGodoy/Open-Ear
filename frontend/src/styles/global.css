@@ -1461,3 +1461,484 @@ select {
     font-size: var(--t-xs);
   }
 }
+
+/* =============================================================================
+ * CAMADA AURORA — o re-skin
+ * =============================================================================
+ * Tudo acima desta linha é a estrutura: quem é grade, quem é linha, o que empilha
+ * onde. Esta seção é a APARÊNCIA, e mora no fim de propósito — as decisões de
+ * layout continuam legíveis lá em cima, sem um redesign passando por dentro delas.
+ *
+ * A referência: near-black com uma aurora ciana difusa ao fundo, arestas
+ * luminosas, halo nos elementos ativos.
+ *
+ * A REGRA QUE NÃO MUDOU
+ * Nenhum valor de `--c-text*`, `--c-surface*` ou `--c-accent*` foi tocado. Os 86
+ * pares de contraste continuam valendo por construção, e não por revalidação.
+ * O que entrou é ornamento: gradiente, brilho, borda e forma.
+ *
+ * SOBRE O VIDRO E O CONTRASTE
+ * A objeção do tokens.css à translucidez é que ela torna a razão de contraste
+ * imprevisível. Aqui ela é PREVISÍVEL porque é limitada: todo elemento de vidro
+ * assenta entre `--c-bg` e `--c-surface`, então o fundo efetivo do texto está
+ * sempre nesse intervalo. No tema escuro, `--c-text-2` dá 10.32:1 sobre surface e
+ * mais que isso sobre o bg (que é mais escuro) — o pior caso do intervalo é AAA.
+ * No claro, o intervalo é 8.66–9.55:1. Nos dois, o pior caso passa folgado.
+ *
+ * O que continua PROIBIDO, e continua sendo: vidro atrás de texto de
+ * transcrição. `.transcript` mora em `.card`, e `.card` é opaco. Sem exceção.
+ * ========================================================================== */
+
+/* ------------------------------------------------------- a aurora, ao fundo */
+/**
+ * Três manchas radiais fixas na viewport, atrás de tudo. `fixed` e não `absolute`
+ * para que rolar a página não arraste a luz junto — aurora que rola vira textura,
+ * e textura em movimento atrás de texto é exatamente o que este app não pode ter.
+ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 12% -10%, var(--c-aurora-1), transparent 70%),
+    radial-gradient(50rem 34rem at 88% 4%, var(--c-aurora-2), transparent 68%),
+    radial-gradient(44rem 40rem at 50% 108%, var(--c-aurora-3), transparent 72%);
+}
+
+/* A casca precisa deixar a aurora aparecer: sem fundo próprio por cima dela. */
+.shell {
+  background: transparent;
+}
+
+.shell__main {
+  padding: var(--s-7) var(--s-5) var(--s-8);
+}
+
+.shell__content {
+  gap: var(--s-5);
+}
+
+/* ------------------------------------------------------------ as superfícies */
+/**
+ * `.card` é onde texto de leitura mora, então segue OPACO. O que ele ganha é a
+ * aresta luminosa e um brilho de canto — luz somada por cima, nunca fundo
+ * subtraído de baixo.
+ */
+.card {
+  position: relative;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-md);
+}
+
+/**
+ * O brilho de canto. Decorativo, e por isso num pseudo-elemento.
+ *
+ * `border-radius: inherit` e NÃO `overflow: hidden` no cartão: recortar o cartão
+ * resolveria o canto do gradiente e de quebra deceparia o anel de foco de
+ * qualquer controle encostado na borda — que é o oposto do que este app pode
+ * fazer. O pseudo-elemento se recorta sozinho.
+ */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(28rem 14rem at 0% 0%, var(--c-glow), transparent 62%);
+}
+
+/* Todo o conteúdo tem que ficar ACIMA do brilho de canto. */
+.card > * {
+  position: relative;
+}
+
+/**
+ * O vidro de verdade: superfícies de CONTROLE, nunca de leitura. A zona de
+ * soltar, o painel de gravação, o cartão de pasta e o seletor de destino.
+ */
+.drop,
+.panel,
+.foldercard,
+.saveto {
+  background: var(--c-glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--c-glass-border);
+}
+
+.drop {
+  border-radius: var(--r-2xl);
+  border-style: dashed;
+}
+
+.drop[data-over='true'] {
+  border-style: solid;
+  box-shadow: var(--shadow-glow);
+}
+
+.panel {
+  border-radius: var(--r-2xl);
+}
+
+/* --------------------------------------------------------------- a navegação */
+.sidebar {
+  background: var(--c-sidebar-bg);
+  border-right: 1px solid var(--c-border);
+}
+
+.navitem {
+  border-radius: var(--r-md);
+  transition:
+    background var(--transition),
+    box-shadow var(--transition);
+}
+
+/**
+ * O item ativo é o único lugar da navegação que ganha halo. Halo em tudo é
+ * decoração; halo num só é indicação de onde a pessoa está — e ele acompanha o
+ * `aria-current` que já estava lá, nunca substitui.
+ */
+.navitem[data-active='true'] {
+  background: var(--c-sidebar-item-active);
+  box-shadow: var(--shadow-glow);
+}
+
+.navitem__badge {
+  border-radius: var(--r-pill);
+}
+
+.topbar {
+  background: var(--c-sidebar-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.shell__scrim {
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+/* -------------------------------------------------------- cabeçalho da tela */
+.screenhead {
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--c-border);
+}
+
+.screenhead__title {
+  font-size: var(--t-2xl);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/**
+ * A barrinha de acento antes do título. É `--c-accent-ui`, o token que existe
+ * justamente para Miami blue como OBJETO gráfico e não como texto — 3:1 em
+ * ambos os temas, que é o que WCAG 1.4.11 pede de elemento não-textual.
+ */
+.screenhead__text {
+  position: relative;
+  padding-left: var(--s-4);
+}
+
+.screenhead__text::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 4px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent-ui);
+  box-shadow: 0 0 12px var(--c-glow);
+}
+
+/* ------------------------------------------------------------------ botões */
+.btn {
+  border-radius: var(--r-md);
+  transition:
+    background var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+.btn--primary {
+  box-shadow: var(--shadow-glow);
+}
+
+/**
+ * O primário sobe 1px no hover. É o único movimento de posição da interface, e
+ * fica atrás de `prefers-reduced-motion` como todo o resto — o bloco de reduced
+ * motion no topo deste arquivo zera a transição, e sem transição o deslocamento
+ * deixa de ser movimento e vira só um estado.
+ */
+.btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn--record {
+  border-radius: var(--r-2xl);
+}
+
+/* --------------------------------------------------------- pastas: a grade */
+/**
+ * `auto-fill` e não `auto-fit`: com uma pasta só, `auto-fit` colapsa as trilhas
+ * vazias e o cartão estica pela largura toda da tela. Uma pasta de 900px de
+ * largura ao lado de nada não parece uma pasta, parece um banner.
+ */
+.folders {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+  gap: var(--s-3);
+}
+
+.foldercard {
+  width: 100%;
+  /* `height: 100%` e não só `min-height`: o <li> já estica para a altura da
+     linha da grade, e sem isso um nome que quebra em duas linhas deixa o cartão
+     vizinho mais baixo que ele. */
+  height: 100%;
+  min-height: 8.5rem;
+  padding: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-1);
+  border-radius: var(--r-2xl);
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    box-shadow var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.foldercard:hover {
+  border-color: var(--c-accent-ui);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+/**
+ * Alvo de arrastar. A mudança NÃO é só a cor da borda: o ícone troca de pasta
+ * fechada para pasta aberta no componente. Cor sozinha nunca é o sinal, nem para
+ * uma affordance de drag — quem não distingue o ciano ainda vê a pasta abrir.
+ */
+.foldercard[data-drop='true'] {
+  border-color: var(--c-accent-ui);
+  border-style: solid;
+  box-shadow: var(--shadow-glow);
+}
+
+.foldercard__icon {
+  display: inline-flex;
+  color: var(--c-accent);
+  margin-bottom: var(--s-2);
+}
+
+.foldercard__name {
+  font-size: var(--t-lg);
+  font-weight: 600;
+  /* Nome longo não pode empurrar a grade: quebra dentro do cartão. */
+  overflow-wrap: anywhere;
+}
+
+.foldercard__count {
+  color: var(--c-text-3);
+  font-size: var(--t-sm);
+}
+
+/* A de criar é tracejada: forma diferente, não só cor diferente. */
+.foldercard--new {
+  border-style: dashed;
+}
+
+.foldercard--new .foldercard__icon {
+  color: var(--c-text-2);
+}
+
+.foldercard--form {
+  justify-content: center;
+  cursor: default;
+}
+
+/* ------------------------------------------------------ pastas: a barra */
+.folderbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+}
+
+/* Empurra renomear e excluir para o lado oposto do voltar. */
+.folderbar__spacer {
+  flex: 1;
+}
+
+/* ------------------------------------------------- campos de texto inline */
+.input {
+  min-height: var(--tap);
+  width: 100%;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: var(--t-md);
+}
+
+.input--inline {
+  max-width: 16rem;
+}
+
+/* O <select> de mover, na linha do arquivo. */
+.select--compact {
+  margin-top: 0;
+  min-height: var(--tap);
+  max-width: 11rem;
+  font-size: var(--t-sm);
+  border-radius: var(--r-md);
+}
+
+.movesel {
+  display: inline-flex;
+}
+
+/* ------------------------------------------------ salvar áudio na biblioteca */
+.saveto {
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-lg);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-5);
+}
+
+.saveto__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--tap);
+  cursor: pointer;
+}
+
+/**
+ * A caixa nativa é escondida com `.sr-only` — a mesma técnica que os chips de
+ * filtro já usavam — e não com `display: none`, que a tiraria do foco e do
+ * leitor de tela. Quem enxerga vê `.saveto__box`; o resto da pilha de
+ * acessibilidade continua conversando com o <input> de verdade.
+ */
+.saveto__box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  border: 2px solid var(--c-border-strong);
+  border-radius: var(--r-sm);
+  color: transparent;
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.saveto__check:checked + .saveto__box {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: var(--c-accent-text);
+}
+
+/* O foco tem que aparecer na caixa desenhada, já que a nativa está invisível. */
+.saveto__check:focus-visible + .saveto__box {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+.saveto__label {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.saveto__icon {
+  color: var(--c-accent);
+}
+
+.saveto__where,
+.saveto__newfolder {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.saveto__select {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.saveto__selectlabel {
+  color: var(--c-text-2);
+  font-size: var(--t-sm);
+}
+
+.saveto__select .select {
+  margin-top: 0;
+  max-width: 14rem;
+}
+
+/* ------------------------------------------------------------------ avisos */
+/**
+ * `hint--warn` leva a cor de aviso E o fundo de aviso. A cor sozinha diria a
+ * mesma coisa para quem a enxerga e nada para quem não enxerga; o bloco com
+ * fundo próprio se separa do texto ao redor por posição, não só por matiz.
+ */
+.hint--warn {
+  color: var(--c-warn);
+  background: var(--c-warn-soft);
+  border-radius: var(--r-sm);
+  padding: var(--s-2) var(--s-3);
+}
+
+/* --------------------------------------------------------------- responsivo */
+/**
+ * 60rem é o MESMO breakpoint da seção responsiva original — é onde a sidebar
+ * vira gaveta. O respiro maior que esta camada deu ao conteúdo tem que voltar
+ * atrás exatamente ali, senão sobra uma faixa de larguras (entre a gaveta e o
+ * desktop) com padding de desktop numa tela que já não é uma.
+ */
+@media (max-width: 60rem) {
+  .shell__main {
+    padding: var(--s-4) var(--s-3) var(--s-6);
+  }
+}
+
+@media (max-width: 40rem) {
+  .folders {
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  }
+
+  .foldercard {
+    min-height: 7rem;
+  }
+
+  /* Empilhado, o seletor de pasta ocupa a linha inteira em vez de espremer. */
+  .select--compact {
+    max-width: none;
+    width: 100%;
+  }
+}

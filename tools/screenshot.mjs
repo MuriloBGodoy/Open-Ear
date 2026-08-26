@@ -32,13 +32,15 @@ const SEED = args.includes('--seed');
  */
 const SEED_SCRIPT = () =>
   new Promise((resolve, reject) => {
-    const open = indexedDB.open('openear', 1);
+    // Versão 2 = a das pastas. Abrir na 1 com o banco já na 2 lança VersionError.
+    const open = indexedDB.open('openear', 2);
     open.onerror = () => reject(open.error);
     open.onsuccess = () => {
       const db = open.result;
-      const tx = db.transaction(['sessions', 'files'], 'readwrite');
+      const tx = db.transaction(['sessions', 'files', 'folders'], 'readwrite');
       const sessions = tx.objectStore('sessions');
       const files = tx.objectStore('files');
+      const folders = tx.objectStore('folders');
 
       /**
        * Ancorado em "hoje", não numa data fixa. O arquivo agrupa por recência
@@ -75,11 +77,24 @@ const SEED_SCRIPT = () =>
         sessions.put({ ...row, id: `seed-s-${i}`, createdAt: base - daysAgo[i] * 86_400_000 });
       });
 
+      /**
+       * Duas pastas e três soltos: a captura precisa provar a grade de pastas, a
+       * contagem de cada uma E a lista da raiz no mesmo quadro. Só pastas
+       * esconderia os soltos; só soltos esconderia a grade inteira.
+       */
+      [
+        { id: 'seed-d-0', name: 'Aulas' },
+        { id: 'seed-d-1', name: 'Consultas médicas' },
+      ].forEach((d, i) => folders.put({ ...d, createdAt: base - i * 86_400_000 }));
+
       const blob = new Blob([new Uint8Array(2048)], { type: 'audio/mpeg' });
       [
-        { name: 'aula-libras-modulo-3.mp3', size: 18_400_000, done: true },
+        { name: 'aula-libras-modulo-3.mp3', size: 18_400_000, done: true, folderId: 'seed-d-0' },
+        { name: 'aula-libras-modulo-4.mp3', size: 15_100_000, done: false, folderId: 'seed-d-0' },
+        { name: 'consulta-dra-marina.m4a', size: 4_120_000, done: true, folderId: 'seed-d-1' },
         { name: 'entrevista-candidato-final.m4a', size: 7_250_000, done: false },
         { name: 'audio-whatsapp-2026-08-14.ogg', size: 946_000, done: false },
+        { name: 'Gravação ao vivo — 25/08/2026 14:32.wav', size: 3_480_000, done: true },
       ].forEach((f, i) => {
         files.put({
           id: `seed-f-${i}`,
@@ -89,6 +104,7 @@ const SEED_SCRIPT = () =>
           type: 'audio/mpeg',
           blob,
           ...(f.done ? { sessionId: 'seed-s-1' } : {}),
+          ...(f.folderId ? { folderId: f.folderId } : {}),
         });
       });
 

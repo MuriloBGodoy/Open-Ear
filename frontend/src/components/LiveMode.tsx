@@ -20,11 +20,22 @@ import { useTranslation } from 'react-i18next';
 import { useLiveTranscription } from '../hooks/useLiveTranscription';
 import { useSettings } from '../context/SettingsContext';
 import { LevelMeter } from './LevelMeter';
+import { SaveToLibrary, type SaveTarget } from './SaveToLibrary';
 import { IconCheck, IconCopy, IconMic, IconPause, IconSave, IconStop } from './Icons';
-import { deriveTitle, saveSession } from '../lib/db';
+import {
+  addLibraryBlob,
+  createFolder,
+  deriveTitle,
+  markFileTranscribed,
+  saveSession,
+  type LibraryFolder,
+} from '../lib/db';
 
 interface LiveModeProps {
   onSaved: () => void;
+  folders: LibraryFolder[];
+  /** Uma pasta criada aqui precisa aparecer na biblioteca sem recarregar. */
+  onFoldersChanged: () => void;
 }
 
 /** mm:ss — cronômetro é para conferir de relance, não para calcular. */
@@ -34,9 +45,9 @@ function clock(totalSeconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-export function LiveMode({ onSaved }: LiveModeProps) {
+export function LiveMode({ onSaved, folders, onFoldersChanged }: LiveModeProps) {
   const { t } = useTranslation();
-  const { formatTime } = useSettings();
+  const { formatTime, formatDateTime } = useSettings();
   const {
     entries,
     running,
@@ -51,8 +62,12 @@ export function LiveMode({ onSaved }: LiveModeProps) {
     reset,
     fullText,
     setError,
+    audioBytes,
+    audioCapped,
+    buildRecording,
   } = useLiveTranscription();
   const [copied, setCopied] = useState(false);
+  const [target, setTarget] = useState<SaveTarget>({ enabled: false, folderId: null });
   const endRef = useRef<HTMLDivElement>(null);
   const startedAtRef = useRef<number>(0);
 
@@ -74,14 +89,40 @@ export function LiveMode({ onSaved }: LiveModeProps) {
 
   const handleSave = async () => {
     if (!fullText) return;
-    await saveSession({
+    const session = await saveSession({
       mode: 'live',
       text: fullText,
       title: deriveTitle(fullText, t('transcriber.tabLive')),
       durationSeconds: elapsedSeconds,
     });
+
+    if (target.enabled) {
+      /**
+       * O WAV inteiro só é montado AQUI, na hora de salvar. Manter uma versão
+       * concatenada viva durante a conversa dobraria a memória da sessão para um
+       * arquivo que na maioria das vezes nunca é pedido.
+       */
+      const recording = await buildRecording();
+      if (recording) {
+        const record = await addLibraryBlob(
+          recording,
+          t('save.recordingName', { date: formatDateTime(Date.now()) }),
+          target.folderId ?? undefined
+        );
+        // Já nasce ligado à transcrição que ele acabou de gerar.
+        await markFileTranscribed(record.id, session.id);
+      }
+    }
+
     onSaved();
     reset();
+    setTarget({ enabled: false, folderId: null });
+  };
+
+  const handleCreateFolder = async (name: string) => {
+    const folder = await createFolder(name);
+    onFoldersChanged();
+    return folder.id;
   };
 
   const handleCopy = async () => {
@@ -166,6 +207,28 @@ export function LiveMode({ onSaved }: LiveModeProps) {
             )}
             <div ref={endRef} />
           </div>
+
+          {/**
+           * Só depois de parar. Durante a gravação a conversa ainda está
+           * acontecendo, e um seletor de pasta ali embaixo disputaria atenção com
+           * a única coisa que importa no momento: a fala aparecendo na tela.
+           */}
+          {!running && fullText && audioBytes > 0 && (
+            <>
+              <SaveToLibrary
+                sizeBytes={audioBytes}
+                folders={folders}
+                value={target}
+                onChange={setTarget}
+                onCreateFolder={handleCreateFolder}
+              />
+              {audioCapped && (
+                <p className="hint hint--warn" role="status">
+                  {t('save.audioCapped')}
+                </p>
+              )}
+            </>
+          )}
 
           {!running && entries.length === 0 && <p className="hint">{t('transcriber.hintIdle')}</p>}
         </section>

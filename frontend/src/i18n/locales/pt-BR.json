@@ -71,13 +71,13 @@
     "count": "{{count}} transcrição",
     "count_plural": "{{count}} transcrições",
     "deleteLabel": "Excluir \"{{title}}\"",
-    "found": "{{count}} transcrição encontrada",
-    "found_plural": "{{count}} transcrições encontradas",
     "groupToday": "Hoje",
     "groupYesterday": "Ontem",
     "group7": "Últimos 7 dias",
     "group30": "Últimos 30 dias",
-    "groupOlder": "Mais antigas"
+    "groupOlder": "Mais antigas",
+    "found_one": "{{count}} transcrição encontrada",
+    "found_other": "{{count}} transcrições encontradas"
   },
   "library": {
     "title": "Biblioteca",
@@ -98,7 +98,24 @@
     "queued": "Na fila",
     "openTranscript": "Abrir transcrição",
     "noneQueued": "Nenhum arquivo esperando na fila.",
-    "noneDone": "Nenhum arquivo transcrito ainda."
+    "noneDone": "Nenhum arquivo transcrito ainda.",
+    "folders": "Pastas",
+    "newFolder": "Nova pasta",
+    "newFolderHint": "Agrupe áudios por assunto",
+    "folderNamePlaceholder": "Nome da pasta",
+    "createFolder": "Criar",
+    "rename": "Renomear",
+    "deleteFolder": "Excluir pasta",
+    "backToRoot": "Todas as pastas",
+    "folderSubtitle": "Os áudios guardados nesta pasta.",
+    "addToFolder": "Adicionar em \"{{name}}\"",
+    "audioCount_one": "{{count}} áudio",
+    "audioCount_other": "{{count}} áudios",
+    "loose": "Soltos",
+    "inFolder": "Áudios da pasta",
+    "folderEmpty": "Esta pasta ainda está vazia. Adicione áudios ou arraste-os para cá.",
+    "noneLoose": "Nenhum áudio solto — todos estão organizados em pastas.",
+    "moveLabel": "Mover \"{{name}}\" para outra pasta"
   },
   "settings": {
     "title": "Ajustes",
@@ -139,5 +156,12 @@
     "micDenied": "Precisamos da permissão do microfone para legendar. Libere o acesso e tente de novo.",
     "micFailed": "Não foi possível acessar o microfone.",
     "fileOpenFailed": "Não conseguimos abrir esse arquivo de áudio. Tente MP3, WAV, M4A ou OGG."
+  },
+  "save": {
+    "keepAudio": "Guardar o áudio na biblioteca",
+    "destination": "Onde",
+    "loose": "Solto na biblioteca",
+    "recordingName": "Gravação ao vivo — {{date}}",
+    "audioCapped": "A gravação passou do limite de memória: o áudio guardado vai só até onde coube. A transcrição está inteira."
   }
 }

@@ -1,7 +1,7 @@
 /**
  * Icons — SVG inline, traço de 1.75px.
  *
- * Inline e não uma lib de ícones por dois motivos: são doze ícones (um pacote
+ * Inline e não uma lib de ícones por dois motivos: são poucos ícones (um pacote
  * inteiro seria desperdício de bundle num PWA) e, mais importante, `currentColor`
  * garante que todo ícone herda a cor do texto — então o contraste que validamos
  * para o texto vale automaticamente para o ícone ao lado dele.
@@ -231,5 +231,50 @@ export function LogoMark({ size = 32, className }: IconProps) {
         opacity={0.55}
       />
     </svg>
+  );
+}
+
+/* ------------------------------------------------------------- pastas ---- */
+
+export function IconFolder(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4.2a1.5 1.5 0 0 1 1.2.6l1 1.4h7.6A1.5 1.5 0 0 1 20 9.5v8A1.5 1.5 0 0 1 18.5 19h-14A1.5 1.5 0 0 1 3 17.5Z" />
+    </Svg>
+  );
+}
+
+export function IconFolderOpen(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M3 17.5v-10A1.5 1.5 0 0 1 4.5 6h4.2a1.5 1.5 0 0 1 1.2.6l1 1.4h7.6A1.5 1.5 0 0 1 20 9.5v1.5" />
+      <path d="M3.4 18.6 5.6 12.7a1.5 1.5 0 0 1 1.4-1h13.1a1 1 0 0 1 .94 1.35l-1.96 5.3a1.5 1.5 0 0 1-1.4.98H4.8a1.5 1.5 0 0 1-1.4-1.03Z" />
+    </Svg>
+  );
+}
+
+export function IconFolderPlus(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4.2a1.5 1.5 0 0 1 1.2.6l1 1.4h7.6A1.5 1.5 0 0 1 20 9.5v8A1.5 1.5 0 0 1 18.5 19h-14A1.5 1.5 0 0 1 3 17.5Z" />
+      <path d="M11.5 14h4M13.5 12v4" />
+    </Svg>
+  );
+}
+
+export function IconArrowLeft(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M19 12H5M11 6l-6 6 6 6" />
+    </Svg>
+  );
+}
+
+export function IconPencil(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 20h4l10.5-10.5a2.12 2.12 0 0 0-3-3L5 17v3Z" />
+      <path d="M14.5 6.5l3 3" />
+    </Svg>
   );
 }

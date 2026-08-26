@@ -145,3 +145,50 @@ export const formatDuration = (seconds: number): string => {
   const s = Math.floor(seconds % 60);
   return `${m}:${String(s).padStart(2, '0')}`;
 };
+
+/**
+ * Cabeçalho WAV canônico escrito por `encodeWav`: RIFF + fmt + data, sem chunks
+ * extras. É constante justamente para `concatWav` poder pular direto ao PCM.
+ */
+export const WAV_HEADER_BYTES = 44;
+
+/**
+ * Cola vários WAV do MESMO formato num só, sem redecodificar.
+ *
+ * Existe para o modo ao vivo: a captura entrega um WAV a cada segmento de fala e
+ * cada um carrega seu próprio cabeçalho de 44 bytes. Concatenar os arquivos
+ * crus produziria um áudio que só toca o primeiro trecho — os cabeçalhos do meio
+ * viram ruído. Aqui o cabeçalho do primeiro é reaproveitado (mesma taxa, mesmos
+ * canais, mesma profundidade) com os dois campos de tamanho reescritos.
+ *
+ * Trabalha em bytes, não em Float32Array: o PCM já está em 16 bits, e reabrir
+ * para float dobraria a memória de uma sessão longa sem mudar uma amostra.
+ */
+export async function concatWav(parts: Blob[]): Promise<Blob | null> {
+  if (parts.length === 0) return null;
+  if (parts.length === 1) return parts[0];
+
+  const buffers = await Promise.all(parts.map((part) => part.arrayBuffer()));
+  const bodies = buffers
+    .filter((buffer) => buffer.byteLength > WAV_HEADER_BYTES)
+    .map((buffer) => new Uint8Array(buffer, WAV_HEADER_BYTES));
+
+  if (bodies.length === 0) return null;
+
+  const dataBytes = bodies.reduce((total, body) => total + body.byteLength, 0);
+  const out = new Uint8Array(WAV_HEADER_BYTES + dataBytes);
+  out.set(new Uint8Array(buffers[0], 0, WAV_HEADER_BYTES), 0);
+
+  let offset = WAV_HEADER_BYTES;
+  for (const body of bodies) {
+    out.set(body, offset);
+    offset += body.byteLength;
+  }
+
+  // Os dois tamanhos que o cabeçalho declara e que a concatenação invalidou.
+  const view = new DataView(out.buffer);
+  view.setUint32(4, 36 + dataBytes, true); // RIFF: tudo depois deste campo
+  view.setUint32(40, dataBytes, true); // data: só o PCM
+
+  return new Blob([out], { type: 'audio/wav' });
+}

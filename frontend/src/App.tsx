@@ -18,7 +18,9 @@ import { checkHealth, type HealthStatus } from './lib/api';
 import {
   listSessions,
   listLibraryFiles,
+  listFolders,
   type LibraryFile,
+  type LibraryFolder,
   type TranscriptionSession,
 } from './lib/db';
 import { navigate, useRouter, type Route } from './lib/router';
@@ -31,17 +33,24 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sessions, setSessions] = useState<TranscriptionSession[]>([]);
   const [files, setFiles] = useState<LibraryFile[]>([]);
+  const [folders, setFolders] = useState<LibraryFolder[]>([]);
   const [health, setHealth] = useState<HealthStatus | 'no-api' | null | 'loading'>('loading');
 
   const refreshSessions = useCallback(() => {
     void listSessions().then(setSessions);
   }, []);
-  const refreshFiles = useCallback(() => {
+  /**
+   * Arquivos e pastas andam juntos: mover um arquivo muda a contagem da pasta, e
+   * apagar uma pasta muda o `folderId` dos arquivos. Recarregar só um dos dois
+   * deixaria a grade mostrando "4 áudios" numa pasta que acabou de esvaziar.
+   */
+  const refreshLibrary = useCallback(() => {
     void listLibraryFiles().then(setFiles);
+    void listFolders().then(setFolders);
   }, []);
 
   useEffect(refreshSessions, [refreshSessions]);
-  useEffect(refreshFiles, [refreshFiles]);
+  useEffect(refreshLibrary, [refreshLibrary]);
   useEffect(() => {
     void checkHealth().then(setHealth);
   }, []);
@@ -54,12 +63,21 @@ export default function App() {
 
   const handleSaved = useCallback(() => {
     refreshSessions();
-    refreshFiles();
+    refreshLibrary();
     navigate('transcriptions');
-  }, [refreshSessions, refreshFiles]);
+  }, [refreshSessions, refreshLibrary]);
 
   const handleTranscribeFromLibrary = useCallback((id: string) => {
     navigate('transcriber', { file: id });
+  }, []);
+
+  /**
+   * A pasta aberta vai na rota, e não em estado local da Biblioteca, pelo mesmo
+   * motivo do salto biblioteca → transcrição: o "voltar" do navegador tem que
+   * sair da pasta, que é o que a pessoa espera de uma navegação para dentro.
+   */
+  const handleOpenFolder = useCallback((id: string | null) => {
+    navigate('library', id ? { folder: id } : {});
   }, []);
 
   /**
@@ -130,6 +148,8 @@ export default function App() {
               onSaved={handleSaved}
               fileId={params.get('file')}
               onFileConsumed={() => navigate('transcriber')}
+              folders={folders}
+              onFoldersChanged={refreshLibrary}
             />
           )}
 
@@ -144,9 +164,12 @@ export default function App() {
           {route === 'library' && (
             <Library
               files={files}
-              onChanged={refreshFiles}
+              folders={folders}
+              onChanged={refreshLibrary}
               onTranscribe={handleTranscribeFromLibrary}
               onOpenTranscript={handleOpenTranscript}
+              openFolderId={params.get('folder')}
+              onOpenFolder={handleOpenFolder}
             />
           )}
 
@@ -154,7 +177,7 @@ export default function App() {
             <Settings
               onCleared={() => {
                 refreshSessions();
-                refreshFiles();
+                refreshLibrary();
               }}
             />
           )}

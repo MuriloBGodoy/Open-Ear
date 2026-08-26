@@ -71,13 +71,13 @@
     "count": "{{count}} transcript",
     "count_plural": "{{count}} transcripts",
     "deleteLabel": "Delete \"{{title}}\"",
-    "found": "{{count}} transcript found",
-    "found_plural": "{{count}} transcripts found",
     "groupToday": "Today",
     "groupYesterday": "Yesterday",
     "group7": "Last 7 days",
     "group30": "Last 30 days",
-    "groupOlder": "Older"
+    "groupOlder": "Older",
+    "found_one": "{{count}} transcript found",
+    "found_other": "{{count}} transcripts found"
   },
   "library": {
     "title": "Library",
@@ -98,7 +98,24 @@
     "queued": "Queued",
     "openTranscript": "Open transcript",
     "noneQueued": "No files waiting in the queue.",
-    "noneDone": "No files transcribed yet."
+    "noneDone": "No files transcribed yet.",
+    "folders": "Folders",
+    "newFolder": "New folder",
+    "newFolderHint": "Group audio by topic",
+    "folderNamePlaceholder": "Folder name",
+    "createFolder": "Create",
+    "rename": "Rename",
+    "deleteFolder": "Delete folder",
+    "backToRoot": "All folders",
+    "folderSubtitle": "The audio kept in this folder.",
+    "addToFolder": "Add to \"{{name}}\"",
+    "audioCount_one": "{{count}} audio file",
+    "audioCount_other": "{{count}} audio files",
+    "loose": "Loose",
+    "inFolder": "Audio in this folder",
+    "folderEmpty": "This folder is still empty. Add audio or drag files in.",
+    "noneLoose": "No loose audio — everything is filed in folders.",
+    "moveLabel": "Move \"{{name}}\" to another folder"
   },
   "settings": {
     "title": "Settings",
@@ -139,5 +156,12 @@
     "micDenied": "We need microphone permission to caption. Allow access and try again.",
     "micFailed": "Could not access the microphone.",
     "fileOpenFailed": "We could not open that audio file. Try MP3, WAV, M4A or OGG."
+  },
+  "save": {
+    "keepAudio": "Keep the audio in the library",
+    "destination": "Where",
+    "loose": "Loose in the library",
+    "recordingName": "Live recording — {{date}}",
+    "audioCapped": "The recording hit the memory limit: the saved audio stops where it fit. The transcript is complete."
   }
 }

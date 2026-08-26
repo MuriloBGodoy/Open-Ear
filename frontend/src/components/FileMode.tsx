@@ -10,8 +10,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { decodeToMono16k, splitIntoChunks, formatDuration, TARGET_SAMPLE_RATE } from '../lib/audio';
 import { transcribe } from '../lib/api';
-import { markFileTranscribed, saveSession } from '../lib/db';
+import {
+  addLibraryBlob,
+  createFolder,
+  markFileTranscribed,
+  saveSession,
+  type LibraryFolder,
+} from '../lib/db';
 import { useSettings, whisperLanguage } from '../context/SettingsContext';
+import { SaveToLibrary, type SaveTarget } from './SaveToLibrary';
 import { IconCheck, IconCopy, IconFile, IconSave } from './Icons';
 
 /** Áudio vindo da biblioteca, já escolhido pelo usuário na outra tela. */
@@ -26,11 +33,20 @@ interface FileModeProps {
   incoming?: IncomingAudio | null;
   /** Chamado depois de consumir `incoming`, para limpar o parâmetro da rota. */
   onConsumed?: () => void;
+  folders: LibraryFolder[];
+  /** Uma pasta criada aqui precisa aparecer na biblioteca sem recarregar. */
+  onFoldersChanged: () => void;
 }
 
 type Phase = 'idle' | 'decoding' | 'transcribing' | 'done';
 
-export function FileMode({ onSaved, incoming, onConsumed }: FileModeProps) {
+export function FileMode({
+  onSaved,
+  incoming,
+  onConsumed,
+  folders,
+  onFoldersChanged,
+}: FileModeProps) {
   const { t } = useTranslation();
   const { audioLanguage } = useSettings();
 
@@ -42,9 +58,18 @@ export function FileMode({ onSaved, incoming, onConsumed }: FileModeProps) {
   const [duration, setDuration] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [target, setTarget] = useState<SaveTarget>({ enabled: false, folderId: null });
   const inputRef = useRef<HTMLInputElement>(null);
   /** Id do arquivo da biblioteca sendo transcrito, para marcar como feito ao salvar. */
   const libraryIdRef = useRef<string | null>(null);
+  /**
+   * O áudio de origem, para poder guardá-lo na biblioteca depois.
+   *
+   * É o Blob ORIGINAL, não o PCM 16 kHz que foi mandado para a API: aquele é uma
+   * versão degradada, feita para caber no limite de upload. Quem guarda um áudio
+   * quer o áudio, não a cópia que serviu para transcrever.
+   */
+  const sourceRef = useRef<{ blob: Blob; name: string } | null>(null);
 
   const run = useCallback(
     async (blob: Blob, name: string, libraryId: string | null = null) => {
@@ -53,6 +78,9 @@ export function FileMode({ onSaved, incoming, onConsumed }: FileModeProps) {
       setProgress(0);
       setFileName(name);
       libraryIdRef.current = libraryId;
+      sourceRef.current = { blob, name };
+      // Áudio que já veio da biblioteca não precisa ser guardado de novo.
+      setTarget({ enabled: false, folderId: null });
       setPhase('decoding');
 
       try {
@@ -104,18 +132,42 @@ export function FileMode({ onSaved, incoming, onConsumed }: FileModeProps) {
       durationSeconds: Math.round(duration),
       title: fileName,
     });
-    if (libraryIdRef.current) await markFileTranscribed(libraryIdRef.current, session.id);
+
+    if (libraryIdRef.current) {
+      await markFileTranscribed(libraryIdRef.current, session.id);
+    } else if (target.enabled && sourceRef.current) {
+      /**
+       * Guarda o áudio JÁ ligado à sessão que ele acabou de gerar. Salvar solto e
+       * deixar a ligação para depois faria o arquivo nascer marcado como "na
+       * fila" na biblioteca — um áudio que a pessoa acabou de ver ser transcrito.
+       */
+      const record = await addLibraryBlob(
+        sourceRef.current.blob,
+        sourceRef.current.name,
+        target.folderId ?? undefined
+      );
+      await markFileTranscribed(record.id, session.id);
+    }
+
     onSaved();
     setText('');
     setPhase('idle');
     setFileName('');
     libraryIdRef.current = null;
+    sourceRef.current = null;
+    setTarget({ enabled: false, folderId: null });
   };
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCreateFolder = async (name: string) => {
+    const folder = await createFolder(name);
+    onFoldersChanged();
+    return folder.id;
   };
 
   const busy = phase === 'decoding' || phase === 'transcribing';
@@ -227,6 +279,22 @@ export function FileMode({ onSaved, incoming, onConsumed }: FileModeProps) {
               </p>
             ))}
           </div>
+
+          {/**
+           * Só para áudio que ainda NÃO está na biblioteca. Quem chegou aqui pelo
+           * botão "transcrever" da biblioteca já tem o arquivo guardado — oferecer
+           * de novo criaria uma segunda cópia do mesmo áudio no dispositivo.
+           */}
+          {!libraryIdRef.current && sourceRef.current && (
+            <SaveToLibrary
+              sizeBytes={sourceRef.current.blob.size}
+              folders={folders}
+              value={target}
+              onChange={setTarget}
+              onCreateFolder={handleCreateFolder}
+              disabled={busy}
+            />
+          )}
         </div>
       )}
     </>
