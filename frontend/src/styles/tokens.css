@@ -123,6 +123,20 @@
 
   --c-focus: #00728f; /* 5.52:1 vs surface, 5.01 vs bg → passa non-text folgado */
 
+  /**
+   * A seta do <select>, desenhada por nós.
+   *
+   * O botão de seta que o Windows desenha ignora o `border-radius` e a paleta:
+   * ele aparece como um retângulo claro colado na borda direita, mesmo com o
+   * `color-scheme` correto. `appearance: none` mata aquele widget, e esta
+   * imagem entra no lugar.
+   *
+   * O traço vem literal (`%233d4653` = --c-text-2) porque `currentColor` não
+   * atravessa uma data URI. Por isso são duas: uma por tema, cada uma no mesmo
+   * token de texto secundário que o resto da interface usa.
+   */
+  --select-chevron: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233d4653' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+
   /* ---------- TEMA CLARO — navegação lateral ---------- */
   --c-sidebar-bg: #f7f9fc; /* 1.05 vs bg: distingue sem virar segunda página */
   --c-sidebar-item-active: #e8faff; /* text sobre ele = 16.77:1 → AAA */
@@ -236,6 +250,8 @@
   --sidebar-w-rail: 76px; /* só ícone: alvo de 48px centrado + 14 de cada lado */
   --header-h: 64px;
   --content-max: 920px; /* medida de leitura do transcript: ~70ch em 22px */
+  /* A tela inicial precisa de mais: o cartão de país abre ao LADO do globo. */
+  --content-max-home: 76rem;
 
   /* Alvo de toque: WCAG 2.2 SC 2.5.8 pede 24px; aqui 48px por decisão de a11y. */
   --tap: 48px;
@@ -272,6 +288,9 @@
   --c-accent-ui: #00b0dc; /* Miami blue PURO · 6.45:1 vs surface → aqui ele pode */
 
   --c-focus: #18bce4; /* 7.31:1 vs surface, 8.93 vs bg */
+
+  /* Mesma seta, no tom claro de texto secundário do escuro (--c-text-2). */
+  --select-chevron: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c4cedb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
 
   --c-sidebar-bg: #0e1520; /* 1.10 vs bg → sidebar assenta, não flutua */
   --c-sidebar-item-active: #0b2e3b; /* text = 13.18:1 · accent = 6.37:1 */

@@ -142,7 +142,12 @@ export default function App() {
       </header>
 
       <main className="shell__main">
-        <div className="shell__content">
+        {/**
+         * A rota vai para o DOM porque uma tela precisa de largura diferente das
+         * outras: a inicial abre o cartão de país AO LADO do globo, e a medida
+         * de leitura de 920px que serve ao transcript não deixa os dois caberem.
+         */}
+        <div className="shell__content" data-route={route}>
           {offline && (
             <div className="notice notice--error" role="alert">
               <div>

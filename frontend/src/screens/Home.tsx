@@ -133,39 +133,59 @@ export function Home({ onStart }: HomeProps) {
         </h2>
         <p className="home__pickhint">{t('home.worldHint')}</p>
 
-        <Globe markers={markers} selectedId={selected} onSelect={setSelected} theme={theme} />
-
         {/**
-         * O cartão do país. `aria-live` porque a escolha acontece num ponto do
-         * globo, longe daqui: sem o anúncio, quem usa leitor de tela clicaria no
-         * marcador e não saberia que apareceu um cartão em outro lugar da tela.
+         * Globo e cartão vivem no mesmo palco porque em tela larga um reage ao
+         * outro: escolher um país desliza o planeta para a esquerda e abre o
+         * cartão no espaço que sobrou. Empilhados, a resposta ao clique nascia
+         * abaixo da dobra — a pessoa tocava num ponto e não via nada acontecer.
          *
-         * Vazio, ele encolhe para uma linha de dica — não uma caixa reservando
-         * espaço, que só chamava atenção para o nada que havia dentro dela.
+         * O globo é TRANSLADADO, não redimensionado. Mudar a largura dele
+         * obrigaria o cobe a reconstruir o quadro a cada passo da animação;
+         * `transform` não toca no canvas e roda na GPU.
          */}
-        <div className="countrycard" data-empty={!active} aria-live="polite">
-          {active ? (
-            <>
-              <div className="countrycard__text">
-                <h3 className="countrycard__name">{countryName(active.country)}</h3>
-                <p className="countrycard__lang">
-                  {t('home.cardLanguage', { language: languageName(active.language) })}
-                </p>
-                <p className="countrycard__body">
-                  {t('home.cardBody', { language: languageName(active.language) })}
-                </p>
-              </div>
-              <button
-                type="button"
-                className="btn btn--primary"
-                onClick={() => onStart(active.language)}
-              >
-                {t('home.cardCta', { language: languageName(active.language) })}
-              </button>
-            </>
-          ) : (
-            <p className="hint">{t('home.cardEmpty')}</p>
-          )}
+        <div className="home__stage" data-open={active !== null}>
+          <Globe markers={markers} selectedId={selected} onSelect={setSelected} theme={theme} />
+
+          {/**
+           * O cartão do país. `aria-live` porque a escolha acontece num ponto do
+           * globo, longe daqui: sem o anúncio, quem usa leitor de tela clicaria
+           * no marcador e não saberia que apareceu um cartão em outro lugar.
+           */}
+          <div className="countrycard" data-empty={!active} aria-live="polite">
+            {active ? (
+              <>
+                <div className="countrycard__text">
+                  <h3 className="countrycard__name">{countryName(active.country)}</h3>
+                  <p className="countrycard__lang">
+                    {t('home.cardLanguage', { language: languageName(active.language) })}
+                  </p>
+                  <p className="countrycard__body">
+                    {t('home.cardBody', { language: languageName(active.language) })}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  onClick={() => onStart(active.language)}
+                >
+                  {t('home.cardCta', { language: languageName(active.language) })}
+                </button>
+
+                {/* Fechar devolve o planeta ao centro. */}
+                <button
+                  type="button"
+                  className="btn btn--icon countrycard__close"
+                  onClick={() => setSelected(null)}
+                  aria-label={t('common.close')}
+                >
+                  <IconClose size={18} />
+                </button>
+              </>
+            ) : (
+              <p className="hint">{t('home.cardEmpty')}</p>
+            )}
+          </div>
         </div>
       </section>
 

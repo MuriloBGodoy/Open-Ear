@@ -1970,8 +1970,32 @@ body::before {
  * inteira — o chip de idioma do transcritor, o seletor de pasta da biblioteca e
  * os campos de Ajustes.
  */
-select {
+/**
+ * As duas classes entram no seletor junto com o elemento por especificidade:
+ * `.select` e `.chipselect__input` declaram o ATALHO `background:`, que zera o
+ * `background-image` — e uma classe (0,1,0) ganha do elemento (0,0,1). Sem
+ * nomeá-las aqui, a seta desenhada abaixo simplesmente não apareceria nelas,
+ * que são justamente todos os <select> do app.
+ */
+select,
+.select,
+.chipselect__input {
+  /**
+   * `appearance: none` tira o botão de seta que o sistema desenha. Ele não
+   * respeita o `border-radius` nem a paleta: aparecia como um retângulo claro
+   * colado na borda direita, com o canto quadrado saindo por fora do campo
+   * arredondado — e nem o `color-scheme` corrigia. A seta agora é nossa,
+   * `--select-chevron`, com o tom certo em cada tema.
+   */
+  appearance: none;
+  -webkit-appearance: none;
   background-color: var(--c-surface);
+  background-image: var(--select-chevron);
+  background-repeat: no-repeat;
+  background-position: right var(--s-3) center;
+  background-size: 1.125rem;
+  /* Espaço para a seta não encostar no texto da opção selecionada. */
+  padding-right: var(--s-6);
   color: var(--c-text);
   /* Sem isto, um <select> estreito estoura o contêiner em vez de encolher. */
   max-width: 100%;
@@ -1992,6 +2016,9 @@ optgroup {
   background-color: var(--c-surface);
   min-width: 0;
   flex: 1 1 auto;
+  /* O chip é apertado: a seta encosta mais no texto do que num campo largo. */
+  padding-right: var(--s-5);
+  background-position: right 0 center;
 }
 
 .chipselect {
@@ -2332,4 +2359,92 @@ optgroup {
   .countrycard {
     justify-content: center;
   }
+}
+
+/* ------------------------------------------------- o palco: globo + cartão */
+/**
+ * Empilhado por padrão: globo no meio, cartão embaixo. É o que cabe em tela
+ * estreita, e é a ordem de leitura correta em qualquer largura.
+ */
+.home__stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-4);
+}
+
+.countrycard {
+  position: relative;
+}
+
+/* O fechar devolve o planeta ao centro; mora no canto do cartão. */
+.countrycard__close {
+  position: absolute;
+  top: var(--s-2);
+  right: var(--s-2);
+}
+
+/**
+ * Em tela larga o palco vira um só plano: o globo fica centrado e o cartão
+ * espera fora de vista, à direita. Escolher um país desliza o planeta para a
+ * esquerda e traz o cartão para o espaço que abriu; fechar desfaz os dois.
+ *
+ * 80rem é onde passa a sobrar largura para as duas coisas lado a lado sem que
+ * uma encoste na outra. Abaixo disso, empilhado é melhor do que apertado.
+ */
+@media (min-width: 80rem) {
+  .home__stage {
+    display: block;
+    position: relative;
+    /* Metade da largura do cartão mais o vão: o quanto o globo anda para a
+       esquerda para abrir espaço sem sair da área de conteúdo. */
+    --card-shift: 13rem;
+  }
+
+  .home__stage .globe {
+    margin-inline: auto;
+    transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .home__stage[data-open='true'] .globe {
+    transform: translateX(calc(var(--card-shift) * -1));
+  }
+
+  .home__stage .countrycard {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 22rem;
+    max-width: none;
+    /* Espaço para o botão de fechar não encostar no nome do país. */
+    padding-right: var(--s-7);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-50%) translateX(var(--s-4));
+    transition:
+      opacity 240ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 240ms cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 240ms;
+  }
+
+  .home__stage[data-open='true'] .countrycard {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%);
+  }
+
+  /* Fechado, o cartão está escondido — a dica de "toque num ponto" já foi dita
+     acima do globo, e repeti-la num bloco invisível não ajudaria ninguém. */
+  .home__stage .countrycard[data-empty='true'] {
+    display: none;
+  }
+}
+
+/**
+ * A medida de leitura de 920px existe para o transcript. A tela inicial não tem
+ * transcript nenhum e precisa de largura para o globo e o cartão lado a lado.
+ */
+.shell__content[data-route='home'] {
+  max-width: var(--content-max-home, 76rem);
 }
