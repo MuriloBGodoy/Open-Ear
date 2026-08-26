@@ -40,6 +40,23 @@
  */
 
 :root {
+  /**
+   * ===========================================================================
+   * color-scheme — o que a NOSSA paleta não alcança
+   * ===========================================================================
+   * Tudo neste arquivo controla o que o app desenha. Mas parte da interface não
+   * é desenhada por nós: o popup de um <select>, a seta dele, a barra de
+   * rolagem, o calendário de um input de data. Isso quem pinta é o sistema, e
+   * sem `color-scheme` ele assume CLARO — daí a lista branca de um <select>
+   * abrindo em cima do tema escuro, com o texto quase ilegível.
+   *
+   * `data-theme` é sempre resolvido para 'light' ou 'dark' antes de ir ao DOM
+   * (o 'system' vira um dos dois no SettingsContext), então dá para casar os
+   * dois aqui sem uma terceira regra. A declaração fica no `:root` base para
+   * valer também no instante antes de o React montar e escrever o atributo.
+   */
+  color-scheme: light;
+
   /* ===========================================================================
    * RAMPAS BRUTAS — não use direto em componente. Use os tokens semânticos.
    * Ficam expostas porque gráfico e medidor de nível precisam de passo exato.
@@ -232,6 +249,9 @@
  * reprovar em contraste. Aqui o Miami blue puro finalmente é utilizável.
  * ========================================================================== */
 :root[data-theme='dark'] {
+  /* Ver a nota em `:root`: sem isto o popup do <select> abre branco. */
+  color-scheme: dark;
+
   --c-bg: #05080d; /* near-black azulado */
   --c-surface: #16202d; /* 1.22 vs bg → cartão se separa da página */
   --c-surface-2: #243141; /* 1.24 vs surface */

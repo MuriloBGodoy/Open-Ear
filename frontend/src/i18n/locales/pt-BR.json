@@ -22,7 +22,8 @@
     "expand": "Expandir menu",
     "openMenu": "Abrir menu",
     "sectionLabel": "Seções do aplicativo",
-    "privacyShort": "Tudo fica salvo só neste dispositivo."
+    "privacyShort": "Tudo fica salvo só neste dispositivo.",
+    "home": "Início"
   },
   "transcriber": {
     "title": "Transcritor",
@@ -163,5 +164,30 @@
     "loose": "Solto na biblioteca",
     "recordingName": "Gravação ao vivo — {{date}}",
     "audioCapped": "A gravação passou do limite de memória: o áudio guardado vai só até onde coube. A transcrição está inteira."
+  },
+  "home": {
+    "welcome": "Bem-vindo ao Open Ear",
+    "lead": "O Open Ear transforma som em texto na tela, enquanto a conversa acontece. Feito para quem é surdo ou tem perda auditiva — aqui o texto não acompanha o áudio, ele é o áudio.",
+    "liveTitle": "Legenda ao vivo",
+    "liveBody": "Alguém fala perto do aparelho e a fala aparece escrita em poucos segundos.",
+    "fileTitle": "Áudio guardado",
+    "fileBody": "Transcreva arquivos e organize tudo em pastas, dentro da sua biblioteca.",
+    "privacyTitle": "Fica no seu aparelho",
+    "privacyBody": "Sem conta e sem nuvem: as transcrições e os áudios não saem daqui.",
+    "pickTitle": "De onde vem a conversa?",
+    "pickHint": "Escolha o país e o app já começa no idioma certo. Dá para trocar a qualquer momento, dentro do transcritor.",
+    "autoStart": "Não sei — começar assim mesmo",
+    "autoHint": "O Open Ear detecta o idioma sozinho. É o que ele já faz por padrão.",
+    "lang": {
+      "auto": "Detectar automaticamente",
+      "pt": "Português",
+      "en": "Inglês",
+      "es": "Espanhol",
+      "fr": "Francês",
+      "de": "Alemão",
+      "it": "Italiano",
+      "ja": "Japonês",
+      "zh": "Chinês"
+    }
   }
 }

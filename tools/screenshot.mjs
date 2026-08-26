@@ -21,7 +21,7 @@ const BASE = flag('url', 'http://localhost:5173');
 const OUT = flag('out', '.screenshots');
 const MOBILE = args.includes('--mobile');
 
-const ROUTES = ['transcriber', 'transcriptions', 'library', 'settings'];
+const ROUTES = ['home', 'transcriber', 'transcriptions', 'library', 'settings'];
 const THEMES = ['dark', 'light'];
 const SEED = args.includes('--seed');
 

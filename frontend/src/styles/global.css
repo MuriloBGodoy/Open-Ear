@@ -1275,6 +1275,19 @@ select {
   outline-offset: 2px;
 }
 
+/**
+ * O anel de foco é UM só, e é o da pílula inteira.
+ *
+ * O <select> aqui não tem moldura própria — quem desenha a borda é o `.chipselect`
+ * em volta dele, junto com o ícone de globo. Sem este `outline: none`, o
+ * `:focus-visible` global desenha um segundo anel só em volta do texto, dentro do
+ * primeiro: duas caixas concêntricas para um controle só. O foco continua
+ * perfeitamente visível — mudou de dono, não sumiu.
+ */
+.chipselect__input:focus-visible {
+  outline: none;
+}
+
 /* =========================================== grupos e contagem ===== */
 
 .group {
@@ -1940,5 +1953,237 @@ body::before {
   .select--compact {
     max-width: none;
     width: 100%;
+  }
+}
+
+/* ============================================================== home ===== */
+/**
+ * A tela inicial. É a única do app com peso de página de apresentação: as outras
+ * são ferramenta, esta é convite.
+ */
+
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-8);
+}
+
+/* Texto à esquerda, planeta à direita. Empilha antes de qualquer um espremer. */
+.home__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: var(--s-7);
+}
+
+.home__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-4);
+}
+
+.home__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-glass-border);
+  background: var(--c-accent-soft);
+  color: var(--c-accent-ink);
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+/**
+ * O único gradiente sobre texto do app inteiro, e ele mora aqui porque
+ * `--t-3xl` é a faixa em que o tokens.css libera isso — texto grande precisa de
+ * 3:1, e as duas pontas do gradiente vão muito além: no escuro 15.13:1 e
+ * 7.31:1, no claro 18.02:1 e 5.52:1. O `color` antes do clip é o que sobra se o
+ * navegador não fizer o recorte, para o título nunca sumir.
+ */
+.home__title {
+  font-size: var(--t-3xl);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  /* Sem isto o título quebra em "Bem-vindo ao Open / Ear", partindo o nome do
+     produto ao meio. `balance` distribui as linhas e mantém "Open Ear" junto. */
+  text-wrap: balance;
+  color: var(--c-text);
+  background: linear-gradient(135deg, var(--c-text) 30%, var(--c-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.home__lead {
+  max-width: 46ch;
+  font-size: var(--t-lg);
+  color: var(--c-text-2);
+  line-height: 1.5;
+}
+
+.home__points {
+  list-style: none;
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.home__point {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  max-width: 46ch;
+  color: var(--c-text-2);
+}
+
+.home__point strong {
+  display: block;
+  color: var(--c-text);
+  margin-bottom: var(--s-1);
+}
+
+.home__pointicon {
+  flex: none;
+  margin-top: 0.15em;
+  color: var(--c-accent);
+}
+
+/* ---------------------------------------------------------------- o globo */
+.home__globe {
+  display: flex;
+  justify-content: center;
+}
+
+/**
+ * Quadrado sempre: o cobe desenha uma esfera num canvas, e canvas retangular
+ * entrega um ovo. `aspect-ratio` resolve sem JS medindo altura.
+ */
+.globe {
+  width: 100%;
+  max-width: 28rem;
+  aspect-ratio: 1;
+  /* O halo do próprio globo já é o brilho; a sombra aqui só assenta a esfera. */
+  filter: drop-shadow(0 12px 40px var(--c-glow));
+}
+
+/* -------------------------------------------------------- escolha de país */
+.home__pick {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-2);
+}
+
+.home__picktitle {
+  font-size: var(--t-xl);
+  letter-spacing: -0.02em;
+}
+
+.home__pickhint {
+  max-width: 60ch;
+  color: var(--c-text-2);
+  margin-bottom: var(--s-3);
+}
+
+.regions {
+  list-style: none;
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--s-3);
+}
+
+.region {
+  width: 100%;
+  height: 100%;
+  min-height: var(--tap);
+  padding: var(--s-3) var(--s-4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-1);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-glass-border);
+  background: var(--c-glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+/**
+ * Hover e foco recebem O MESMO destaque. O globo gira nos dois casos, então a
+ * borda que acende precisa acompanhar nos dois — senão quem navega por teclado
+ * vê o planeta reagir a algo que a tela não mostra ter sido selecionado.
+ */
+.region:hover,
+.region:focus-visible {
+  border-color: var(--c-accent-ui);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.region__name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.region__lang {
+  color: var(--c-text-3);
+  font-size: var(--t-sm);
+}
+
+.home__auto {
+  align-self: flex-start;
+}
+
+/**
+ * O rótulo mais longo da lista de idiomas é "Detectar automaticamente", que
+ * agora é o valor padrão. Os 11rem de antes cortavam o texto no meio.
+ */
+.chipselect__input {
+  max-width: 15rem;
+}
+
+@media (max-width: 60rem) {
+  /* O planeta vai para cima: é ele que diz o que a tela é antes de qualquer
+     texto ser lido. */
+  .home__hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-5);
+  }
+
+  .home__globe {
+    order: -1;
+  }
+
+  .globe {
+    max-width: 20rem;
+  }
+
+  .home {
+    gap: var(--s-6);
+  }
+}
+
+@media (max-width: 40rem) {
+  .regions {
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  }
+
+  .globe {
+    max-width: 15rem;
   }
 }

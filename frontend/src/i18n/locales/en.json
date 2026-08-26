@@ -22,7 +22,8 @@
     "expand": "Expand menu",
     "openMenu": "Open menu",
     "sectionLabel": "App sections",
-    "privacyShort": "Everything stays on this device only."
+    "privacyShort": "Everything stays on this device only.",
+    "home": "Home"
   },
   "transcriber": {
     "title": "Transcriber",
@@ -163,5 +164,30 @@
     "loose": "Loose in the library",
     "recordingName": "Live recording — {{date}}",
     "audioCapped": "The recording hit the memory limit: the saved audio stops where it fit. The transcript is complete."
+  },
+  "home": {
+    "welcome": "Welcome to Open Ear",
+    "lead": "Open Ear turns sound into text on screen, while the conversation is happening. Built for people who are deaf or hard of hearing — here the text does not accompany the audio, it is the audio.",
+    "liveTitle": "Live captions",
+    "liveBody": "Someone speaks near the device and their words appear in writing within seconds.",
+    "fileTitle": "Saved audio",
+    "fileBody": "Transcribe files and keep everything organised in folders, inside your library.",
+    "privacyTitle": "Stays on your device",
+    "privacyBody": "No account and no cloud: your transcripts and audio never leave it.",
+    "pickTitle": "Where is the conversation coming from?",
+    "pickHint": "Pick a country and the app starts in the right language. You can change it at any time, inside the transcriber.",
+    "autoStart": "I'm not sure — start anyway",
+    "autoHint": "Open Ear detects the language on its own. That is already what it does by default.",
+    "lang": {
+      "auto": "Detect automatically",
+      "pt": "Portuguese",
+      "en": "English",
+      "es": "Spanish",
+      "fr": "French",
+      "de": "German",
+      "it": "Italian",
+      "ja": "Japanese",
+      "zh": "Chinese"
+    }
   }
 }

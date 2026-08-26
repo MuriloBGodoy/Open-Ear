@@ -15,6 +15,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Route } from '../lib/router';
 import {
+  IconHome,
   IconMic,
   IconTranscripts,
   IconLibrary,
@@ -33,6 +34,7 @@ interface SidebarProps {
 }
 
 const ITEMS: { route: Route; Icon: typeof IconMic; badge?: 'transcriptions' | 'library' }[] = [
+  { route: 'home', Icon: IconHome },
   { route: 'transcriber', Icon: IconMic },
   { route: 'transcriptions', Icon: IconTranscripts, badge: 'transcriptions' },
   { route: 'library', Icon: IconLibrary, badge: 'library' },

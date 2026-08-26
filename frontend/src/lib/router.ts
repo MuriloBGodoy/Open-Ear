@@ -11,7 +11,10 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-export const ROUTES = ['transcriber', 'transcriptions', 'library', 'settings'] as const;
+export const ROUTES = ['home', 'transcriber', 'transcriptions', 'library', 'settings'] as const;
+
+/** Onde cai quem chega sem hash, ou com um hash que não existe mais. */
+const DEFAULT_ROUTE: Route = 'home';
 
 export type Route = (typeof ROUTES)[number];
 
@@ -24,7 +27,7 @@ export interface Location {
 function parse(): Location {
   const raw = window.location.hash.replace(/^#\/?/, '');
   const [path, query = ''] = raw.split('?');
-  const route = (ROUTES as readonly string[]).includes(path) ? (path as Route) : 'transcriber';
+  const route = (ROUTES as readonly string[]).includes(path) ? (path as Route) : DEFAULT_ROUTE;
   return { route, params: new URLSearchParams(query) };
 }
 
@@ -39,7 +42,7 @@ export function useRouter() {
   useEffect(() => {
     const onChange = () => setLocation(parse());
     // Hash vazio no primeiro load: normaliza para que voltar no navegador funcione.
-    if (!window.location.hash) window.location.replace('#/transcriber');
+    if (!window.location.hash) window.location.replace(`#/${DEFAULT_ROUTE}`);
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);

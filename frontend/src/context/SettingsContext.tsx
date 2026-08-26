@@ -71,14 +71,26 @@ function detectRegion(): Region {
 }
 
 /**
- * Idioma do áudio default: o mesmo da interface. É o palpite mais provável, e
- * "auto" seria pior — a detecção do Whisper erra em áudio curto de legenda ao
- * vivo, justamente o modo principal.
+ * Idioma do áudio default: detecção automática.
+ *
+ * Isto INVERTE a decisão anterior, que era usar o idioma da interface. O
+ * argumento contra o 'auto' continua verdadeiro: o Whisper decide o idioma pelos
+ * primeiros segundos, e em legenda ao vivo cada segmento é curto, então ele erra
+ * mais ali do que num arquivo longo.
+ *
+ * O que virou o jogo é comparar os dois ERROS, não os dois acertos. Quem legenda
+ * uma conversa não escolhe o idioma de quem vai falar. Com o idioma fixo na
+ * interface, alguém falando espanhol sai transcrito como se fosse português —
+ * texto plausível, silenciosamente errado, e a pessoa surda que depende daquele
+ * texto não tem como desconfiar. Com o 'auto', o erro aparece na tela e se
+ * conserta fixando o idioma no chip ao lado das abas, que continua ali.
+ *
+ * No modo ao vivo o que segura a detecção é o prompt de contexto: cada segmento
+ * sobe com as últimas falas já transcritas, o que ancora o modelo no idioma que
+ * ele vinha usando em vez de decidir do zero a cada trecho.
  */
-function defaultAudioLanguage(app: AppLanguage): AudioLanguage {
-  if (app === 'pt-BR') return 'pt';
-  if (app === 'es') return 'es';
-  return 'en';
+function defaultAudioLanguage(): AudioLanguage {
+  return 'auto';
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -88,7 +100,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     () => i18n.language as AppLanguage
   );
   const [audioLanguage, setAudioLanguage] = useState<AudioLanguage>(
-    () => read(KEY.audioLanguage, defaultAudioLanguage(i18n.language as AppLanguage)) as AudioLanguage
+    () => read(KEY.audioLanguage, defaultAudioLanguage()) as AudioLanguage
   );
   const [region, setRegion] = useState<Region>(() => read(KEY.region, detectRegion()) as Region);
   const [textSizeIndex, setTextSizeIndexState] = useState(() => {

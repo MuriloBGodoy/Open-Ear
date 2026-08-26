@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sidebar } from './components/Sidebar';
+import { Home } from './screens/Home';
 import { Transcriber } from './screens/Transcriber';
 import { Transcriptions } from './screens/Transcriptions';
 import { Library } from './screens/Library';
@@ -24,11 +25,14 @@ import {
   type TranscriptionSession,
 } from './lib/db';
 import { navigate, useRouter, type Route } from './lib/router';
+import { useSettings } from './context/SettingsContext';
+import type { AudioLanguage } from './i18n';
 import './styles/global.css';
 
 export default function App() {
   const { t } = useTranslation();
   const { route, params } = useRouter();
+  const { setAudioLanguage } = useSettings();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sessions, setSessions] = useState<TranscriptionSession[]>([]);
@@ -79,6 +83,20 @@ export default function App() {
   const handleOpenFolder = useCallback((id: string | null) => {
     navigate('library', id ? { folder: id } : {});
   }, []);
+
+  /**
+   * A tela inicial escolhe a região e já entrega a pessoa no transcritor com o
+   * idioma aplicado. O idioma vai pelo contexto de ajustes, e não pela rota,
+   * porque é uma PREFERÊNCIA e não um destino: ela vale para as próximas
+   * sessões também, e o chip ao lado das abas continua sendo quem manda.
+   */
+  const handleStartFromHome = useCallback(
+    (language: AudioLanguage) => {
+      setAudioLanguage(language);
+      navigate('transcriber');
+    },
+    [setAudioLanguage]
+  );
 
   /**
    * O caminho de volta: da biblioteca para a transcrição que aquele arquivo gerou.
@@ -142,6 +160,8 @@ export default function App() {
               </div>
             </div>
           )}
+
+          {route === 'home' && <Home onStart={handleStartFromHome} />}
 
           {route === 'transcriber' && (
             <Transcriber
