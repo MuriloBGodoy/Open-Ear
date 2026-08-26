@@ -192,6 +192,8 @@
     "cardLanguage": "Idioma: {{language}}",
     "cardBody": "Open Ear transcribirá asumiendo que la conversación es en {{language}}. Puedes cambiarlo cuando quieras, dentro del transcriptor.",
     "cardCta": "Transcribir en {{language}}",
-    "cardEmpty": "Toca un punto del globo para ver el país y su idioma."
+    "cardEmpty": "Toca un punto del globo para ver el país y su idioma.",
+    "aboutLabel": "¿Qué es Open Ear?",
+    "aboutTitle": "Qué hace Open Ear"
   }
 }

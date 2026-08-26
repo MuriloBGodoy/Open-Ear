@@ -286,3 +286,13 @@ export function IconHome(props: IconProps) {
     </Svg>
   );
 }
+
+export function IconInfo(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5" />
+      <path d="M12 7.75h.01" />
+    </Svg>
+  );
+}

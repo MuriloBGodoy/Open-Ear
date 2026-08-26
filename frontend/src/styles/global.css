@@ -1956,22 +1956,65 @@ body::before {
   }
 }
 
+/* ================================================= controles nativos ===== */
+/**
+ * O <select> e a lista que ele abre.
+ *
+ * `color-scheme` (em tokens.css) resolve a seta, a barra de rolagem e o popup
+ * de quase tudo — mas não de um <select> que declarou `background: none`. Sem
+ * cor de fundo própria, o Chrome no Windows desenha a lista pelo caminho
+ * padrão, e ela abre BRANCA em cima do tema escuro, com as opções ilegíveis.
+ *
+ * Então a regra é: todo <select> tem cor de fundo, e toda <option> também. As
+ * duas saem dos mesmos tokens do resto do app, e valem para a plataforma
+ * inteira — o chip de idioma do transcritor, o seletor de pasta da biblioteca e
+ * os campos de Ajustes.
+ */
+select {
+  background-color: var(--c-surface);
+  color: var(--c-text);
+  /* Sem isto, um <select> estreito estoura o contêiner em vez de encolher. */
+  max-width: 100%;
+}
+
+option,
+optgroup {
+  background-color: var(--c-surface);
+  color: var(--c-text);
+}
+
+/**
+ * O chip de idioma pinta o fundo no invólucro (a pílula), e o <select> dentro
+ * dele era transparente — era exatamente esse o caso quebrado. Recebe a MESMA
+ * cor da pílula: invisível na tela, decisivo para a lista que ele abre.
+ */
+.chipselect__input {
+  background-color: var(--c-surface);
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.chipselect {
+  max-width: 100%;
+  min-width: 0;
+}
+
 /* ============================================================== home ===== */
 /**
  * A tela inicial. É a única do app com peso de página de apresentação: as outras
  * são ferramenta, esta é convite.
  *
- * Tudo centrado numa coluna só. A versão anterior punha o texto à esquerda e o
- * globo à direita, e o globo — que é a parte que explica o que a tela faz —
- * acabava sendo um enfeite de canto, pequeno demais para convidar ao toque.
- * Aqui ele é o segundo ato, grande e no meio.
+ * A ordem foi apertada até o globo caber na primeira tela: título, uma frase, o
+ * botão, e o planeta. O que explicava o app em três colunas foi para trás do
+ * botão de informação — era bonito e empurrava o globo para baixo da dobra.
  */
 
 .home {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--s-8);
+  gap: var(--s-5);
 }
 
 /* --------------------------------------------------------- o topo, enxuto */
@@ -1979,22 +2022,9 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--s-4);
+  gap: var(--s-3);
   text-align: center;
-  max-width: 40rem;
-}
-
-.home__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-  padding: var(--s-2) var(--s-4);
-  border-radius: var(--r-pill);
-  border: 1px solid var(--c-glass-border);
-  background: var(--c-accent-soft);
-  color: var(--c-accent-ink);
-  font-size: var(--t-sm);
-  font-weight: 600;
+  max-width: 42rem;
 }
 
 /**
@@ -2019,7 +2049,6 @@ body::before {
 }
 
 .home__lead {
-  font-size: var(--t-lg);
   color: var(--c-text-2);
   line-height: 1.5;
   text-wrap: pretty;
@@ -2032,36 +2061,6 @@ body::before {
   font-size: var(--t-lg);
 }
 
-/* ------------------------------------------------------------- os três pontos */
-.home__points {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-5);
-}
-
-.home__point {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--s-3);
-  color: var(--c-text-2);
-}
-
-.home__point strong {
-  display: block;
-  color: var(--c-text);
-  margin-bottom: var(--s-1);
-}
-
-.home__pointicon {
-  flex: none;
-  margin-top: 0.15em;
-  color: var(--c-accent);
-}
-
 /* --------------------------------------------------------------- o planeta */
 .home__world {
   width: 100%;
@@ -2072,15 +2071,10 @@ body::before {
   text-align: center;
 }
 
-.home__picktitle {
-  font-size: var(--t-xl);
-  letter-spacing: -0.02em;
-}
-
 .home__pickhint {
   max-width: 52ch;
   color: var(--c-text-2);
-  margin-bottom: var(--s-4);
+  font-size: var(--t-sm);
 }
 
 /**
@@ -2088,22 +2082,23 @@ body::before {
  * e canvas retangular entrega um ovo. É também o sistema de coordenadas dos
  * botões-marcador, que são posicionados em pixels a partir do canto dele — daí
  * o `position: relative` não ser negociável.
+ *
+ * O tamanho é limitado pela ALTURA disponível (`vmin`), não só pela largura: um
+ * globo de 44rem numa janela baixa e larga sairia pela dobra inteiro, que é
+ * exatamente o problema que esta versão veio resolver.
  */
 .globe {
   position: relative;
-  width: 100%;
-  max-width: 34rem;
+  width: min(100%, 44rem, 62vmin);
   aspect-ratio: 1;
   touch-action: none; /* o arrasto gira o planeta, não rola a página */
   cursor: grab;
   /**
    * O cobe deixa uma folga entre a esfera e a borda do canvas — é onde o glow
    * mora. Como o canvas é quadrado, essa folga vira um vão morto acima e abaixo
-   * do planeta. A margem negativa devolve parte dele ao layout; o valor casa com
-   * o `margin-top` do cartão logo abaixo, então as caixas encostam sem se
-   * sobrepor (importante: as duas recebem clique).
+   * do planeta; a margem negativa devolve parte dele ao layout.
    */
-  margin-block: calc(var(--s-4) * -1);
+  margin-block: calc(var(--s-5) * -1);
 }
 
 .globe:active {
@@ -2113,7 +2108,7 @@ body::before {
 .globe__canvas {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 12px 44px var(--c-glow));
+  filter: drop-shadow(0 16px 56px var(--c-glow));
 }
 
 /**
@@ -2124,17 +2119,17 @@ body::before {
  * segundo ponto aqui deixaria dois círculos levemente desalinhados em cada
  * país, porque o canvas tem antialiasing e o DOM não.
  *
- * 30px de alvo, abaixo dos 48px que o app usa em todo o resto. É o único lugar
+ * 32px de alvo, abaixo dos 48px que o app usa em todo o resto. É o único lugar
  * onde isso acontece, e é geometria e não descuido: no globo, Portugal e
  * Espanha ficam a poucos pixels um do outro, e alvos de 48px se sobreporiam a
  * ponto de um cobrir o outro. Quem precisa de alvo maior tem o caminho de
- * sempre, que é melhor: "Começar agora" lá em cima, e o seletor de idioma do
+ * sempre, que é melhor: "Começar agora" logo acima, e o seletor de idioma do
  * transcritor, ambos com 48px.
  */
 .globe__pin {
   position: absolute;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   transform: translate(-50%, -50%);
   border: 2px solid transparent;
@@ -2153,12 +2148,8 @@ body::before {
 /* ------------------------------------------------------- o cartão do país */
 .countrycard {
   width: 100%;
-  max-width: 34rem;
-  margin-top: var(--s-4);
+  max-width: 36rem;
   padding: var(--s-4) var(--s-5);
-  /* Alto o bastante para o cartão preenchido caber sem empurrar o globo, e
-     baixo o bastante para não parecer uma caixa esquecida quando vazio. */
-  min-height: 6.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2172,9 +2163,16 @@ body::before {
   -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 
-/* Vazio ele é só um lugar reservado: borda tracejada e conteúdo centrado. */
+/**
+ * Vazio, o cartão deixa de ser cartão: vira uma linha de dica. A caixa
+ * tracejada reservando altura só chamava atenção para o nada dentro dela.
+ */
 .countrycard[data-empty='true'] {
-  border-style: dashed;
+  padding: 0;
+  border: 0;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   justify-content: center;
   text-align: center;
 }
@@ -2201,26 +2199,134 @@ body::before {
   margin-top: var(--s-2);
 }
 
+/* ------------------------------------------------ "o que é isso?", no canto */
+.home__info {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--tap);
+  height: var(--tap);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--c-glass-border);
+  background: var(--c-glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--c-text-2);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.home__info:hover {
+  color: var(--c-accent);
+  border-color: var(--c-accent-ui);
+  box-shadow: var(--shadow-glow);
+}
+
+/* --------------------------------------------------------------- diálogo */
+/**
+ * `<dialog>` nativo: o `::backdrop`, o Esc e a armadilha de foco vêm do
+ * navegador. O que o CSS faz aqui é só tirar a moldura padrão e centralizar.
+ */
+.modal {
+  margin: auto;
+  padding: 0;
+  width: min(92vw, 34rem);
+  max-height: 85dvh;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  background: var(--c-surface);
+  color: var(--c-text);
+  box-shadow: var(--shadow-md);
+  overflow: auto;
+}
+
+.modal::backdrop {
+  background: rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.modal__panel {
+  padding: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.modal__title {
+  font-size: var(--t-xl);
+  letter-spacing: -0.02em;
+}
+
+/* Dentro do diálogo os três pontos empilham: é coluna estreita, não página. */
+.home__points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.home__point {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  color: var(--c-text-2);
+}
+
+.home__point strong {
+  display: block;
+  color: var(--c-text);
+  margin-bottom: var(--s-1);
+}
+
+.home__pointicon {
+  flex: none;
+  margin-top: 0.15em;
+  color: var(--c-accent);
+}
+
+/* --------------------------------------------------------------- responsivo */
 @media (max-width: 60rem) {
-  .home {
-    gap: var(--s-6);
-  }
-
-  /* Os três pontos empilham antes de virarem colunas de duas palavras. */
-  .home__points {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--s-4);
-    max-width: 34rem;
-  }
-
+  /**
+   * No celular a janela é alta e estreita, então a trava de altura (`vmin`)
+   * deixa de ser a que importa: aqui o limite é a largura, e o globo pode ser
+   * quase toda ela. É onde ele fica mais impressionante.
+   */
   .globe {
-    max-width: 26rem;
+    width: min(100%, 30rem, 88vw);
+    margin-block: calc(var(--s-4) * -1);
+  }
+
+  .home__info {
+    /* Fora do fluxo, ele encostaria no topo da área de conteúdo; aqui sobe para
+       a mesma linha do título sem cobrir texto. */
+    top: calc(var(--s-2) * -1);
   }
 }
 
 @media (max-width: 40rem) {
-  .globe {
-    max-width: 20rem;
+  .home {
+    gap: var(--s-4);
+  }
+
+  .home__title {
+    font-size: var(--t-2xl);
+  }
+
+  /* O botão de informação não pode ficar em cima do título em tela estreita. */
+  .home__hero {
+    padding-top: var(--s-6);
   }
 
   .countrycard {

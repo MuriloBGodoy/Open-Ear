@@ -6,23 +6,20 @@
  *   1. "Começar agora", logo abaixo do título. Vai direto para o transcritor
  *      sem escolher idioma nenhum — o app detecta sozinho, que é o padrão. É a
  *      saída rápida, e a resposta certa para a maioria.
- *   2. O globo, embaixo. Quem quer fixar o idioma gira o planeta, toca num
- *      ponto, lê um cartão sobre o país e entra por ali.
+ *   2. O globo, logo em seguida e grande. Quem quer fixar o idioma gira o
+ *      planeta, toca num ponto, lê um cartão sobre o país e entra por ali.
  *
- * O caminho longo não pode ficar na frente do curto. Quem chegou para legendar
- * uma conversa que está acontecendo agora não deveria ter que escolher um país
- * antes de conseguir apertar um botão.
- *
- * POR QUE PAÍS E NÃO IDIOMA
- * Idioma do áudio é o campo que mais estraga uma transcrição, e é também o que a
- * pessoa menos sabe responder no formato "código de idioma". "De onde vem a
- * conversa?" qualquer um responde.
+ * O QUE NÃO ESTÁ AQUI, E POR QUÊ
+ * A explicação do que o app faz (legenda ao vivo, biblioteca, privacidade) mora
+ * atrás do botão de informação, num diálogo. Ela é leitura de primeira visita, e
+ * ocupava a altura inteira entre o título e o globo — empurrando para baixo da
+ * dobra justamente a parte que explica a tela melhor do que qualquer parágrafo.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe, type GlobeMarker, type LatLng } from '../components/Globe';
-import { IconGlobe, IconLibrary, IconMic, LogoMark } from '../components/Icons';
+import { IconClose, IconGlobe, IconInfo, IconLibrary, IconMic } from '../components/Icons';
 import type { AudioLanguage } from '../i18n';
 
 interface Region {
@@ -81,6 +78,7 @@ export function Home({ onStart }: HomeProps) {
   const { t, i18n } = useTranslation();
   const theme = useResolvedTheme();
   const [selected, setSelected] = useState<string | null>(null);
+  const aboutRef = useRef<HTMLDialogElement>(null);
 
   /**
    * Nome do país no idioma da interface, pelo próprio navegador. Escrever
@@ -112,11 +110,6 @@ export function Home({ onStart }: HomeProps) {
     <div className="home">
       {/* ------------------------------------------------- o convite e a saída */}
       <header className="home__hero">
-        <span className="home__badge">
-          <LogoMark size={22} className="brand__mark" />
-          Open Ear
-        </span>
-
         <h1 className="home__title">{t('home.welcome')}</h1>
         <p className="home__lead">{t('home.lead')}</p>
 
@@ -127,33 +120,15 @@ export function Home({ onStart }: HomeProps) {
         <p className="hint">{t('home.autoHint')}</p>
       </header>
 
-      <ul className="home__points">
-        <li className="home__point">
-          <IconMic size={22} className="home__pointicon" />
-          <span>
-            <strong>{t('home.liveTitle')}</strong>
-            {t('home.liveBody')}
-          </span>
-        </li>
-        <li className="home__point">
-          <IconLibrary size={22} className="home__pointicon" />
-          <span>
-            <strong>{t('home.fileTitle')}</strong>
-            {t('home.fileBody')}
-          </span>
-        </li>
-        <li className="home__point">
-          <IconGlobe size={22} className="home__pointicon" />
-          <span>
-            <strong>{t('home.privacyTitle')}</strong>
-            {t('home.privacyBody')}
-          </span>
-        </li>
-      </ul>
-
       {/* ------------------------------------------------------------- o globo */}
       <section className="home__world" aria-labelledby="home-world">
-        <h2 className="home__picktitle" id="home-world">
+        {/**
+         * O título da seção existe para a estrutura de cabeçalhos — é por ela
+         * que quem usa leitor de tela navega — mas fica só para leitor: escrito
+         * na tela, ele repetiria o que a linha logo abaixo já diz, e roubaria da
+         * dobra a altura que o globo precisa.
+         */}
+        <h2 className="sr-only" id="home-world">
           {t('home.pickTitle')}
         </h2>
         <p className="home__pickhint">{t('home.worldHint')}</p>
@@ -165,8 +140,8 @@ export function Home({ onStart }: HomeProps) {
          * globo, longe daqui: sem o anúncio, quem usa leitor de tela clicaria no
          * marcador e não saberia que apareceu um cartão em outro lugar da tela.
          *
-         * O bloco existe mesmo vazio, com altura mínima, para o globo não pular
-         * na tela toda vez que alguém escolhe um país.
+         * Vazio, ele encolhe para uma linha de dica — não uma caixa reservando
+         * espaço, que só chamava atenção para o nada que havia dentro dela.
          */}
         <div className="countrycard" data-empty={!active} aria-live="polite">
           {active ? (
@@ -189,10 +164,73 @@ export function Home({ onStart }: HomeProps) {
               </button>
             </>
           ) : (
-            <p className="empty">{t('home.cardEmpty')}</p>
+            <p className="hint">{t('home.cardEmpty')}</p>
           )}
         </div>
       </section>
+
+      {/* -------------------------------------------- "o que é isso?", no canto */}
+      <button
+        type="button"
+        className="home__info"
+        onClick={() => aboutRef.current?.showModal()}
+        aria-label={t('home.aboutLabel')}
+      >
+        <IconInfo size={24} />
+      </button>
+
+      {/**
+       * `<dialog>` nativo com `showModal()`: a armadilha de foco, o Esc para
+       * fechar e o `aria-modal` vêm de graça e corretos. Reimplementar isso à
+       * mão é o caminho mais curto para um diálogo que prende quem usa teclado.
+       */}
+      <dialog
+        ref={aboutRef}
+        className="modal"
+        // Clicar no fundo fecha. O alvo do clique só é o próprio <dialog>
+        // quando o ponteiro caiu fora do painel interno.
+        onClick={(event) => {
+          if (event.target === aboutRef.current) aboutRef.current?.close();
+        }}
+      >
+        <div className="modal__panel">
+          <div className="modal__head">
+            <h2 className="modal__title">{t('home.aboutTitle')}</h2>
+            <button
+              type="button"
+              className="btn btn--icon"
+              onClick={() => aboutRef.current?.close()}
+              aria-label={t('common.close')}
+            >
+              <IconClose />
+            </button>
+          </div>
+
+          <ul className="home__points">
+            <li className="home__point">
+              <IconMic size={22} className="home__pointicon" />
+              <span>
+                <strong>{t('home.liveTitle')}</strong>
+                {t('home.liveBody')}
+              </span>
+            </li>
+            <li className="home__point">
+              <IconLibrary size={22} className="home__pointicon" />
+              <span>
+                <strong>{t('home.fileTitle')}</strong>
+                {t('home.fileBody')}
+              </span>
+            </li>
+            <li className="home__point">
+              <IconGlobe size={22} className="home__pointicon" />
+              <span>
+                <strong>{t('home.privacyTitle')}</strong>
+                {t('home.privacyBody')}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </dialog>
     </div>
   );
 }

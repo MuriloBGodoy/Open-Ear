@@ -192,6 +192,8 @@
     "cardLanguage": "Language: {{language}}",
     "cardBody": "Open Ear will transcribe assuming the conversation is in {{language}}. You can change it at any time, inside the transcriber.",
     "cardCta": "Transcribe in {{language}}",
-    "cardEmpty": "Tap a point on the globe to see the country and its language."
+    "cardEmpty": "Tap a point on the globe to see the country and its language.",
+    "aboutLabel": "What is Open Ear?",
+    "aboutTitle": "What Open Ear does"
   }
 }
