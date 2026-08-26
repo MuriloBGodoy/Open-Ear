@@ -175,8 +175,6 @@
     "privacyTitle": "Stays on your device",
     "privacyBody": "No account and no cloud: your transcripts and audio never leave it.",
     "pickTitle": "Where is the conversation coming from?",
-    "pickHint": "Pick a country and the app starts in the right language. You can change it at any time, inside the transcriber.",
-    "autoStart": "I'm not sure — start anyway",
     "autoHint": "Open Ear detects the language on its own. That is already what it does by default.",
     "lang": {
       "auto": "Detect automatically",
@@ -188,6 +186,12 @@
       "it": "Italian",
       "ja": "Japanese",
       "zh": "Chinese"
-    }
+    },
+    "getStarted": "Get started",
+    "worldHint": "Or spin the globe and tap a point to lock in that country’s language.",
+    "cardLanguage": "Language: {{language}}",
+    "cardBody": "Open Ear will transcribe assuming the conversation is in {{language}}. You can change it at any time, inside the transcriber.",
+    "cardCta": "Transcribe in {{language}}",
+    "cardEmpty": "Tap a point on the globe to see the country and its language."
   }
 }

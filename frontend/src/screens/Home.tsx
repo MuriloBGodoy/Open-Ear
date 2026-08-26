@@ -1,25 +1,27 @@
 /**
  * Home — a porta de entrada.
  *
- * Duas funções, nesta ordem: dizer o que o app é para quem chegou agora, e tirar
- * a pessoa daqui já com o idioma certo escolhido.
+ * Duas portas, e a ordem entre elas é a decisão de design da tela:
  *
- * POR QUE ESCOLHER REGIÃO E NÃO IDIOMA
+ *   1. "Começar agora", logo abaixo do título. Vai direto para o transcritor
+ *      sem escolher idioma nenhum — o app detecta sozinho, que é o padrão. É a
+ *      saída rápida, e a resposta certa para a maioria.
+ *   2. O globo, embaixo. Quem quer fixar o idioma gira o planeta, toca num
+ *      ponto, lê um cartão sobre o país e entra por ali.
+ *
+ * O caminho longo não pode ficar na frente do curto. Quem chegou para legendar
+ * uma conversa que está acontecendo agora não deveria ter que escolher um país
+ * antes de conseguir apertar um botão.
+ *
+ * POR QUE PAÍS E NÃO IDIOMA
  * Idioma do áudio é o campo que mais estraga uma transcrição, e é também o que a
  * pessoa menos sabe responder no formato "código de idioma". "De onde vem a
- * conversa?" é uma pergunta que qualquer um responde, e um país mapeia para um
- * idioma sem ambiguidade prática. Quem não sabe tem a saída de sempre: detectar
- * automaticamente, que é o default do app de qualquer forma.
- *
- * O GLOBO É ORNAMENTO, OS BOTÕES SÃO O CONTROLE
- * Ver `Globe.tsx`. Passar o mouse ou o foco por um botão gira o planeta até o
- * país; clicar leva direto para o transcritor. O globo confirma a escolha, nunca
- * a recebe — se o WebGL não existir, nada aqui deixa de funcionar.
+ * conversa?" qualquer um responde.
  */
 
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe, type LatLng } from '../components/Globe';
+import { Globe, type GlobeMarker, type LatLng } from '../components/Globe';
 import { IconGlobe, IconLibrary, IconMic, LogoMark } from '../components/Icons';
 import type { AudioLanguage } from '../i18n';
 
@@ -32,9 +34,8 @@ interface Region {
 
 /**
  * Um país por idioma que o app oferece, mais os pares óbvios (Brasil/Portugal,
- * EUA/Reino Unido, Espanha/México). A lista é curta de propósito: é uma partida
- * rápida, não um seletor de todos os países do mundo — quem precisar de outro
- * idioma troca no chip ao lado das abas, dentro do transcritor.
+ * EUA/Reino Unido, Espanha/México). Curta de propósito: são pontos num globo, e
+ * um planeta coberto de bolinhas não é um mapa, é ruído.
  */
 const REGIONS: Region[] = [
   { country: 'BR', language: 'pt', at: [-14.24, -51.93] },
@@ -50,14 +51,11 @@ const REGIONS: Region[] = [
   { country: 'CN', language: 'zh', at: [35.86, 104.19] },
 ];
 
-const MARKERS = REGIONS.map((region) => region.at);
-
 /**
  * O tema já resolvido ('light' | 'dark') que o SettingsContext escreveu no
  * documento. Lido do DOM em vez de recalculado aqui porque `theme` no contexto
  * pode ser 'system', e o globo precisa de uma resposta binária — duplicar a
- * regra de resolução seria criar um segundo lugar capaz de discordar do
- * primeiro.
+ * regra de resolução criaria um segundo lugar capaz de discordar do primeiro.
  */
 function useResolvedTheme(): string {
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme ?? 'light');
@@ -82,7 +80,7 @@ interface HomeProps {
 export function Home({ onStart }: HomeProps) {
   const { t, i18n } = useTranslation();
   const theme = useResolvedTheme();
-  const [preview, setPreview] = useState<LatLng | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
 
   /**
    * Nome do país no idioma da interface, pelo próprio navegador. Escrever
@@ -98,93 +96,102 @@ export function Home({ onStart }: HomeProps) {
   }, [i18n.language]);
 
   const countryName = (code: string) => displayNames?.of(code) ?? code;
+  const languageName = (language: AudioLanguage) => t(`home.lang.${language}`);
 
-  const languageLabel = (language: AudioLanguage) => t(`home.lang.${language}`);
+  const markers: GlobeMarker[] = REGIONS.map((region) => ({
+    id: region.country,
+    at: region.at,
+    // O leitor de tela anuncia país e idioma juntos: uma bolinha sem rótulo não
+    // diz nada, e "Brasil" sozinho não explica o que escolher ali significa.
+    label: `${countryName(region.country)} — ${languageName(region.language)}`,
+  }));
+
+  const active = REGIONS.find((region) => region.country === selected) ?? null;
 
   return (
     <div className="home">
-      {/* ------------------------------------------------------------ o convite */}
+      {/* ------------------------------------------------- o convite e a saída */}
       <header className="home__hero">
-        <div className="home__intro">
-          <span className="home__badge">
-            <LogoMark size={22} className="brand__mark" />
-            Open Ear
-          </span>
+        <span className="home__badge">
+          <LogoMark size={22} className="brand__mark" />
+          Open Ear
+        </span>
 
-          <h1 className="home__title">{t('home.welcome')}</h1>
-          <p className="home__lead">{t('home.lead')}</p>
+        <h1 className="home__title">{t('home.welcome')}</h1>
+        <p className="home__lead">{t('home.lead')}</p>
 
-          <ul className="home__points">
-            <li className="home__point">
-              <IconMic size={22} className="home__pointicon" />
-              <span>
-                <strong>{t('home.liveTitle')}</strong>
-                {t('home.liveBody')}
-              </span>
-            </li>
-            <li className="home__point">
-              <IconLibrary size={22} className="home__pointicon" />
-              <span>
-                <strong>{t('home.fileTitle')}</strong>
-                {t('home.fileBody')}
-              </span>
-            </li>
-            <li className="home__point">
-              <IconGlobe size={22} className="home__pointicon" />
-              <span>
-                <strong>{t('home.privacyTitle')}</strong>
-                {t('home.privacyBody')}
-              </span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="home__globe">
-          <Globe markers={MARKERS} focus={preview} theme={theme} />
-        </div>
-      </header>
-
-      {/* ---------------------------------------------------- a escolha de região */}
-      <section className="home__pick" aria-labelledby="home-pick">
-        <h2 className="home__picktitle" id="home-pick">
-          {t('home.pickTitle')}
-        </h2>
-        <p className="home__pickhint">{t('home.pickHint')}</p>
-
-        <ul className="regions">
-          {REGIONS.map((region) => (
-            <li key={region.country}>
-              <button
-                type="button"
-                className="region"
-                onClick={() => onStart(region.language)}
-                /**
-                 * Passar o foco também gira o globo, não só o mouse: quem navega
-                 * por teclado recebe exatamente o mesmo retorno visual de quem
-                 * navega apontando.
-                 */
-                onMouseEnter={() => setPreview(region.at)}
-                onFocus={() => setPreview(region.at)}
-                onMouseLeave={() => setPreview(null)}
-                onBlur={() => setPreview(null)}
-              >
-                <span className="region__name">{countryName(region.country)}</span>
-                <span className="region__lang">{languageLabel(region.language)}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        {/**
-         * A saída para quem não sabe. Fica fora da grade e com peso de ação
-         * primária porque é a resposta CERTA na dúvida — e porque é o default do
-         * app, então escolhê-la não é desistir de configurar, é confirmar.
-         */}
-        <button type="button" className="btn btn--primary home__auto" onClick={() => onStart('auto')}>
-          <IconGlobe size={20} />
-          {t('home.autoStart')}
+        <button type="button" className="btn btn--primary btn--lg" onClick={() => onStart('auto')}>
+          <IconMic size={20} />
+          {t('home.getStarted')}
         </button>
         <p className="hint">{t('home.autoHint')}</p>
+      </header>
+
+      <ul className="home__points">
+        <li className="home__point">
+          <IconMic size={22} className="home__pointicon" />
+          <span>
+            <strong>{t('home.liveTitle')}</strong>
+            {t('home.liveBody')}
+          </span>
+        </li>
+        <li className="home__point">
+          <IconLibrary size={22} className="home__pointicon" />
+          <span>
+            <strong>{t('home.fileTitle')}</strong>
+            {t('home.fileBody')}
+          </span>
+        </li>
+        <li className="home__point">
+          <IconGlobe size={22} className="home__pointicon" />
+          <span>
+            <strong>{t('home.privacyTitle')}</strong>
+            {t('home.privacyBody')}
+          </span>
+        </li>
+      </ul>
+
+      {/* ------------------------------------------------------------- o globo */}
+      <section className="home__world" aria-labelledby="home-world">
+        <h2 className="home__picktitle" id="home-world">
+          {t('home.pickTitle')}
+        </h2>
+        <p className="home__pickhint">{t('home.worldHint')}</p>
+
+        <Globe markers={markers} selectedId={selected} onSelect={setSelected} theme={theme} />
+
+        {/**
+         * O cartão do país. `aria-live` porque a escolha acontece num ponto do
+         * globo, longe daqui: sem o anúncio, quem usa leitor de tela clicaria no
+         * marcador e não saberia que apareceu um cartão em outro lugar da tela.
+         *
+         * O bloco existe mesmo vazio, com altura mínima, para o globo não pular
+         * na tela toda vez que alguém escolhe um país.
+         */}
+        <div className="countrycard" data-empty={!active} aria-live="polite">
+          {active ? (
+            <>
+              <div className="countrycard__text">
+                <h3 className="countrycard__name">{countryName(active.country)}</h3>
+                <p className="countrycard__lang">
+                  {t('home.cardLanguage', { language: languageName(active.language) })}
+                </p>
+                <p className="countrycard__body">
+                  {t('home.cardBody', { language: languageName(active.language) })}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => onStart(active.language)}
+              >
+                {t('home.cardCta', { language: languageName(active.language) })}
+              </button>
+            </>
+          ) : (
+            <p className="empty">{t('home.cardEmpty')}</p>
+          )}
+        </div>
       </section>
     </div>
   );

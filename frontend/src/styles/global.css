@@ -1960,27 +1960,28 @@ body::before {
 /**
  * A tela inicial. É a única do app com peso de página de apresentação: as outras
  * são ferramenta, esta é convite.
+ *
+ * Tudo centrado numa coluna só. A versão anterior punha o texto à esquerda e o
+ * globo à direita, e o globo — que é a parte que explica o que a tela faz —
+ * acabava sendo um enfeite de canto, pequeno demais para convidar ao toque.
+ * Aqui ele é o segundo ato, grande e no meio.
  */
 
 .home {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--s-8);
 }
 
-/* Texto à esquerda, planeta à direita. Empilha antes de qualquer um espremer. */
+/* --------------------------------------------------------- o topo, enxuto */
 .home__hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  align-items: center;
-  gap: var(--s-7);
-}
-
-.home__intro {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--s-4);
+  text-align: center;
+  max-width: 40rem;
 }
 
 .home__badge {
@@ -2018,26 +2019,34 @@ body::before {
 }
 
 .home__lead {
-  max-width: 46ch;
   font-size: var(--t-lg);
   color: var(--c-text-2);
   line-height: 1.5;
+  text-wrap: pretty;
 }
 
+/* A ação principal da tela merece ser maior que um botão de barra de ações. */
+.btn--lg {
+  min-height: 3.5rem;
+  padding: 0 var(--s-6);
+  font-size: var(--t-lg);
+}
+
+/* ------------------------------------------------------------- os três pontos */
 .home__points {
   list-style: none;
-  margin: var(--s-2) 0 0;
+  margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-4);
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-5);
 }
 
 .home__point {
   display: flex;
   align-items: flex-start;
   gap: var(--s-3);
-  max-width: 46ch;
   color: var(--c-text-2);
 }
 
@@ -2053,30 +2062,14 @@ body::before {
   color: var(--c-accent);
 }
 
-/* ---------------------------------------------------------------- o globo */
-.home__globe {
-  display: flex;
-  justify-content: center;
-}
-
-/**
- * Quadrado sempre: o cobe desenha uma esfera num canvas, e canvas retangular
- * entrega um ovo. `aspect-ratio` resolve sem JS medindo altura.
- */
-.globe {
+/* --------------------------------------------------------------- o planeta */
+.home__world {
   width: 100%;
-  max-width: 28rem;
-  aspect-ratio: 1;
-  /* O halo do próprio globo já é o brilho; a sombra aqui só assenta a esfera. */
-  filter: drop-shadow(0 12px 40px var(--c-glow));
-}
-
-/* -------------------------------------------------------- escolha de país */
-.home__pick {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--s-2);
+  text-align: center;
 }
 
 .home__picktitle {
@@ -2085,105 +2078,152 @@ body::before {
 }
 
 .home__pickhint {
-  max-width: 60ch;
+  max-width: 52ch;
   color: var(--c-text-2);
-  margin-bottom: var(--s-3);
+  margin-bottom: var(--s-4);
 }
 
-.regions {
-  list-style: none;
-  margin: 0 0 var(--s-4);
-  padding: 0;
+/**
+ * O invólucro do globo. Quadrado sempre: o cobe desenha uma esfera num canvas,
+ * e canvas retangular entrega um ovo. É também o sistema de coordenadas dos
+ * botões-marcador, que são posicionados em pixels a partir do canto dele — daí
+ * o `position: relative` não ser negociável.
+ */
+.globe {
+  position: relative;
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  gap: var(--s-3);
+  max-width: 34rem;
+  aspect-ratio: 1;
+  touch-action: none; /* o arrasto gira o planeta, não rola a página */
+  cursor: grab;
+  /**
+   * O cobe deixa uma folga entre a esfera e a borda do canvas — é onde o glow
+   * mora. Como o canvas é quadrado, essa folga vira um vão morto acima e abaixo
+   * do planeta. A margem negativa devolve parte dele ao layout; o valor casa com
+   * o `margin-top` do cartão logo abaixo, então as caixas encostam sem se
+   * sobrepor (importante: as duas recebem clique).
+   */
+  margin-block: calc(var(--s-4) * -1);
 }
 
-.region {
+.globe:active {
+  cursor: grabbing;
+}
+
+.globe__canvas {
   width: 100%;
   height: 100%;
-  min-height: var(--tap);
-  padding: var(--s-3) var(--s-4);
+  filter: drop-shadow(0 12px 44px var(--c-glow));
+}
+
+/**
+ * O marcador clicável.
+ *
+ * É TRANSPARENTE: a bolinha que se vê é a que o cobe desenha dentro do WebGL,
+ * e este botão é a área de toque e o anel de foco por cima dela. Desenhar um
+ * segundo ponto aqui deixaria dois círculos levemente desalinhados em cada
+ * país, porque o canvas tem antialiasing e o DOM não.
+ *
+ * 30px de alvo, abaixo dos 48px que o app usa em todo o resto. É o único lugar
+ * onde isso acontece, e é geometria e não descuido: no globo, Portugal e
+ * Espanha ficam a poucos pixels um do outro, e alvos de 48px se sobreporiam a
+ * ponto de um cobrir o outro. Quem precisa de alvo maior tem o caminho de
+ * sempre, que é melhor: "Começar agora" lá em cima, e o seletor de idioma do
+ * transcritor, ambos com 48px.
+ */
+.globe__pin {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.globe__pin:hover,
+.globe__pin[data-selected='true'] {
+  border-color: var(--c-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ------------------------------------------------------- o cartão do país */
+.countrycard {
+  width: 100%;
+  max-width: 34rem;
+  margin-top: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  /* Alto o bastante para o cartão preenchido caber sem empurrar o globo, e
+     baixo o bastante para não parecer uma caixa esquecida quando vazio. */
+  min-height: 6.5rem;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--s-1);
-  border-radius: var(--r-lg);
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  text-align: left;
+  border-radius: var(--r-xl);
   border: 1px solid var(--c-glass-border);
   background: var(--c-glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  color: var(--c-text);
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color var(--transition),
-    box-shadow var(--transition),
-    transform var(--transition);
 }
 
-/**
- * Hover e foco recebem O MESMO destaque. O globo gira nos dois casos, então a
- * borda que acende precisa acompanhar nos dois — senão quem navega por teclado
- * vê o planeta reagir a algo que a tela não mostra ter sido selecionado.
- */
-.region:hover,
-.region:focus-visible {
-  border-color: var(--c-accent-ui);
-  box-shadow: var(--shadow-glow);
-  transform: translateY(-2px);
+/* Vazio ele é só um lugar reservado: borda tracejada e conteúdo centrado. */
+.countrycard[data-empty='true'] {
+  border-style: dashed;
+  justify-content: center;
+  text-align: center;
 }
 
-.region__name {
+.countrycard__text {
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+
+.countrycard__name {
+  font-size: var(--t-xl);
+  letter-spacing: -0.02em;
+}
+
+.countrycard__lang {
+  color: var(--c-accent);
   font-weight: 600;
-  overflow-wrap: anywhere;
+  margin-top: var(--s-1);
 }
 
-.region__lang {
-  color: var(--c-text-3);
+.countrycard__body {
+  color: var(--c-text-2);
   font-size: var(--t-sm);
-}
-
-.home__auto {
-  align-self: flex-start;
-}
-
-/**
- * O rótulo mais longo da lista de idiomas é "Detectar automaticamente", que
- * agora é o valor padrão. Os 11rem de antes cortavam o texto no meio.
- */
-.chipselect__input {
-  max-width: 15rem;
+  margin-top: var(--s-2);
 }
 
 @media (max-width: 60rem) {
-  /* O planeta vai para cima: é ele que diz o que a tela é antes de qualquer
-     texto ser lido. */
-  .home__hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--s-5);
+  .home {
+    gap: var(--s-6);
   }
 
-  .home__globe {
-    order: -1;
+  /* Os três pontos empilham antes de virarem colunas de duas palavras. */
+  .home__points {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-4);
+    max-width: 34rem;
   }
 
   .globe {
-    max-width: 20rem;
-  }
-
-  .home {
-    gap: var(--s-6);
+    max-width: 26rem;
   }
 }
 
 @media (max-width: 40rem) {
-  .regions {
-    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  .globe {
+    max-width: 20rem;
   }
 
-  .globe {
-    max-width: 15rem;
+  .countrycard {
+    justify-content: center;
   }
 }

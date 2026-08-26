@@ -175,8 +175,6 @@
     "privacyTitle": "Fica no seu aparelho",
     "privacyBody": "Sem conta e sem nuvem: as transcrições e os áudios não saem daqui.",
     "pickTitle": "De onde vem a conversa?",
-    "pickHint": "Escolha o país e o app já começa no idioma certo. Dá para trocar a qualquer momento, dentro do transcritor.",
-    "autoStart": "Não sei — começar assim mesmo",
     "autoHint": "O Open Ear detecta o idioma sozinho. É o que ele já faz por padrão.",
     "lang": {
       "auto": "Detectar automaticamente",
@@ -188,6 +186,12 @@
       "it": "Italiano",
       "ja": "Japonês",
       "zh": "Chinês"
-    }
+    },
+    "getStarted": "Começar agora",
+    "worldHint": "Ou gire o globo e toque num ponto para já fixar o idioma daquele país.",
+    "cardLanguage": "Idioma: {{language}}",
+    "cardBody": "O Open Ear vai transcrever assumindo que a conversa é em {{language}}. Dá para trocar a qualquer momento, dentro do transcritor.",
+    "cardCta": "Transcrever em {{language}}",
+    "cardEmpty": "Toque num ponto do globo para ver o país e o idioma."
   }
 }
