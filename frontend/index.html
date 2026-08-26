@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <!--
+      O iOS ignora os ícones do manifesto ao adicionar à tela de início: ele lê
+      só esta tag. Aponta para o maskable porque o iOS aplica o próprio recorte
+      arredondado — um PNG com canto transparente ficaria com borda preta.
+    -->
+    <link rel="apple-touch-icon" href="/icon-maskable-512.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1420" />
+    <meta
+      name="description"
+      content="Open Ear transcreve áudio e legenda conversas ao vivo. Feito para quem não ouve."
+    />
+    <title>Open Ear — Turning sound into sight</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

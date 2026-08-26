@@ -1,0 +1,50 @@
+{
+  "query": "notes history list search ui",
+  "source": "dribbble",
+  "collectedAt": null,
+  "collected": 6,
+  "references": [
+    {
+      "file": "01--fitness-dashboard-admin-panel-for-coaches-dashba--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/26009297-Fitness-Dashboard-Admin-Panel-for-Coaches",
+      "imageUrl": "https://cdn.dribbble.com/userupload/43265441/file/original-62632bed0ba6a08b3105927f2a19926d.jpg?crop=0x0-1080x810&format=webp&resize=1200x900&vertical=center",
+      "title": "Fitness Dashboard - Admin Panel for Coaches dashbaord dashboard design fitness dashboard design fitnessdashboard uidesign uiux uiuxdesign us",
+      "site": "dribbble"
+    },
+    {
+      "file": "02--hospital-crm-platform-crm-dashboard-design-green--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/23543289-Hospital-CRM-Platform",
+      "imageUrl": "https://cdn.dribbble.com/userupload/12764799/file/original-74c26c7c5b97f5ba963d44f12392c883.png?crop=429x0-3743x2485&format=webp&resize=1200x900&vertical=center",
+      "title": "Hospital CRM Platform crm dashboard design green hospital hospital crm medical medical crm patients platform statistics ui user interface de",
+      "site": "dribbble"
+    },
+    {
+      "file": "03--notes-app-figma-ui-ux-vector-web--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/25703316-Notes-App",
+      "imageUrl": "https://cdn.dribbble.com/userupload/37430590/file/original-8ebd8fece663eaa4201db79266a2eb97.png?crop=2x0-1442x1080&format=webp&resize=1200x900&vertical=center",
+      "title": "Notes App figma ui ux vector web",
+      "site": "dribbble"
+    },
+    {
+      "file": "04--coino-crypto-trading-crypto-market-app-ui-kit-ap--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/22968452-Coino-Crypto-Trading-Crypto-Market-App-UI-Kit",
+      "imageUrl": "https://cdn.dribbble.com/userupload/11163642/file/original-2e204b105b160447accb7937536df09e.png?format=webp&resize=1200x900&vertical=center",
+      "title": "Coino - Crypto Trading, Crypto Market App UI Kit app app design application crypto exchange app crypto investment app crypto market app cryp",
+      "site": "dribbble"
+    },
+    {
+      "file": "05--call-center-agent-dashboard-callcenter-crm-dashb--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27615451-Call-Center-Agent-Dashboard",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48592695/file/fe4b93135b177bab10962101f6b5c576.png?crop=0x3-2880x2163&format=webp&resize=1200x900&vertical=center",
+      "title": "Call Center Agent Dashboard callcenter crm dashboard designinspiration designstrategy designsystem designtokens enterprisedesign figma produ",
+      "site": "dribbble"
+    },
+    {
+      "file": "06--zenfit-fitness-workout-app-ui-kit-app-app-design--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/22983808-ZenFit-Fitness-Workout-App-UI-Kit",
+      "imageUrl": "https://cdn.dribbble.com/userupload/11204263/file/original-e9f55a52304c6d270b156719cb6321a4.png?format=webp&resize=1200x900&vertical=center",
+      "title": "ZenFit - Fitness & Workout App UI Kit app app design application design design system figma fitness app gym app interface mobile mockup port",
+      "site": "dribbble"
+    }
+  ]
+}

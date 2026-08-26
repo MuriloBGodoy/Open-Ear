@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Open Ear">
+  <!--
+    Fundo near-black azulado + Miami blue: a paleta do app. O ciano puro só é
+    legível sobre escuro, e é justamente aqui que ele pode brilhar à vontade.
+  -->
+  <rect width="512" height="512" rx="112" fill="#0b1420" />
+  <!-- Onda sonora à esquerda virando linhas de texto à direita: turning sound into sight. -->
+  <g stroke="#00b0dc" stroke-width="30" stroke-linecap="round" fill="none">
+    <path d="M104 256 v-38" />
+    <path d="M104 256 v38" />
+    <path d="M164 256 v-88" />
+    <path d="M164 256 v88" />
+  </g>
+  <g fill="#f2f6fb">
+    <rect x="228" y="170" width="180" height="28" rx="14" />
+    <rect x="228" y="242" width="180" height="28" rx="14" />
+    <rect x="228" y="314" width="112" height="28" rx="14" />
+  </g>
+</svg>

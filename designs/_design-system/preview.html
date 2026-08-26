@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Ear — design system, sidebar e as 4 telas</title>
+<style>
+/* ============================================================================
+   TOKENS — cópia fiel de frontend/src/styles/tokens.css.
+   O artifact é autossuficiente de propósito: abre offline, sem build.
+   ========================================================================= */
+:root {
+  --cyan-50:#e8faff; --cyan-100:#c7f1fc; --cyan-200:#96e5f9; --cyan-300:#55d2f1;
+  --cyan-400:#18bce4; --cyan-500:#00b0dc; --cyan-600:#0090b6; --cyan-700:#00728f;
+  --cyan-800:#0a5a70; --cyan-900:#0e4353; --cyan-950:#082b36;
+
+  --grey-0:#ffffff; --grey-25:#f7f9fc; --grey-50:#f1f4f9; --grey-100:#e6ebf2;
+  --grey-200:#d4dbe5; --grey-300:#b5bfcd; --grey-400:#838ea0; --grey-500:#697585;
+  --grey-600:#4f5a69; --grey-700:#39424f; --grey-800:#242c37; --grey-900:#151b23;
+  --grey-950:#0c1118; --grey-1000:#05080d;
+
+  --c-bg:#f1f4f9; --c-surface:#ffffff; --c-surface-2:#e6ebf2; --c-surface-3:#d4dbe5;
+  --c-border:#c4cedc; --c-border-strong:#838ea0;
+  --c-text:#101720; --c-text-2:#3d4653; --c-text-3:#5a6472;
+  --c-accent:#00728f; --c-accent-hover:#0a5a70; --c-accent-text:#ffffff;
+  --c-accent-soft:#e8faff; --c-accent-ink:#0e4353; --c-accent-ui:#0090b6;
+  --c-focus:#00728f;
+  --c-sidebar-bg:#f7f9fc; --c-sidebar-item-active:#e8faff;
+  --c-live:#b3183f; --c-live-soft:#fdebf0;
+  --c-ok:#0a6a4a; --c-ok-soft:#e4f5ee;
+  --c-warn:#7e4e00; --c-warn-soft:#fdf2de;
+  --c-danger:#af2318; --c-danger-soft:#fdecea;
+  --c-glow:rgb(0 176 220 / 0.10);
+  --c-glass-bg:rgb(255 255 255 / 0.72); --c-glass-border:rgb(0 114 143 / 0.18);
+
+  --s-1:.25rem; --s-2:.5rem; --s-3:.75rem; --s-4:1rem; --s-5:1.5rem;
+  --s-6:2rem; --s-7:3rem; --s-8:4rem;
+
+  --font-ui: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --t-xs:.8125rem; --t-sm:.9375rem; --t-md:1.0625rem; --t-lg:1.25rem;
+  --t-xl:1.625rem; --t-2xl:2.125rem; --t-3xl:3rem;
+  --lh-ui:1.45;
+  --t-transcript:1.375rem; --lh-transcript:1.65;
+
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:28px; --r-pill:999px;
+  --shadow-sm:0 1px 2px rgb(11 20 33 / .06), 0 1px 3px rgb(11 20 33 / .08);
+  --shadow-md:0 6px 20px rgb(11 20 33 / .10), 0 1px 3px rgb(11 20 33 / .06);
+  --shadow-glow:0 0 0 1px rgb(0 176 220 / .35), 0 4px 24px rgb(0 176 220 / .18);
+
+  --sidebar-w:248px; --sidebar-w-rail:76px; --header-h:64px; --content-max:920px;
+  --tap:48px;
+  --transition:160ms cubic-bezier(.4,0,.2,1);
+}
+:root[data-theme='dark'] {
+  --c-bg:#05080d; --c-surface:#16202d; --c-surface-2:#243141; --c-surface-3:#303f53;
+  --c-border:#2f3d50; --c-border-strong:#637286;
+  --c-text:#f2f6fb; --c-text-2:#c4cedb; --c-text-3:#98a4b4;
+  --c-accent:#18bce4; --c-accent-hover:#55d2f1; --c-accent-text:#04222b;
+  --c-accent-soft:#0b2e3b; --c-accent-ink:#96e5f9; --c-accent-ui:#00b0dc;
+  --c-focus:#18bce4;
+  --c-sidebar-bg:#0e1520; --c-sidebar-item-active:#0b2e3b;
+  --c-live:#ff9db4; --c-live-soft:#3a1620;
+  --c-ok:#5fd3a3; --c-ok-soft:#0c2a21;
+  --c-warn:#e8b058; --c-warn-soft:#2c2113;
+  --c-danger:#ff9f94; --c-danger-soft:#351a18;
+  --c-glow:rgb(0 176 220 / 0.22);
+  --c-glass-bg:rgb(36 49 65 / .55); --c-glass-border:rgb(150 229 249 / .16);
+  --shadow-sm:0 1px 2px rgb(0 0 0 / .5);
+  --shadow-md:0 8px 28px rgb(0 0 0 / .55), 0 1px 2px rgb(0 0 0 / .4);
+  --shadow-glow:0 0 0 1px rgb(24 188 228 / .45), 0 6px 32px rgb(0 176 220 / .28);
+}
+
+/* ============================================================================
+   Chrome do próprio artifact
+   ========================================================================= */
+*{box-sizing:border-box}
+body{margin:0;background:var(--c-bg);color:var(--c-text);font-family:var(--font-ui);
+  line-height:var(--lh-ui);-webkit-font-smoothing:antialiased;transition:background var(--transition),color var(--transition)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--s-5) var(--s-8)}
+a{color:var(--c-accent)}
+:focus-visible{outline:2px solid var(--c-focus);outline-offset:2px;border-radius:4px}
+
+.topbar{position:sticky;top:0;z-index:50;background:var(--c-bg);
+  border-bottom:1px solid var(--c-border);padding:var(--s-3) var(--s-5);
+  display:flex;gap:var(--s-4);align-items:center;flex-wrap:wrap}
+.brand{font-size:var(--t-lg);font-weight:700;letter-spacing:-.02em;margin-right:auto}
+.brand small{display:block;font-size:var(--t-xs);font-weight:500;color:var(--c-text-3);letter-spacing:0}
+.jump{display:flex;gap:var(--s-1);flex-wrap:wrap}
+.jump a{font-size:var(--t-sm);color:var(--c-text-2);text-decoration:none;
+  padding:var(--s-2) var(--s-3);border-radius:var(--r-pill)}
+.jump a:hover{background:var(--c-surface-2);color:var(--c-text)}
+.tbtn{min-height:var(--tap);padding:0 var(--s-4);border-radius:var(--r-pill);
+  border:1px solid var(--c-border-strong);background:var(--c-surface);
+  color:var(--c-text);font:inherit;font-size:var(--t-sm);font-weight:600;cursor:pointer}
+.tbtn:hover{background:var(--c-surface-2)}
+
+h2{font-size:var(--t-2xl);letter-spacing:-.02em;margin:var(--s-8) 0 var(--s-2)}
+h3{font-size:var(--t-xl);letter-spacing:-.01em;margin:var(--s-6) 0 var(--s-2)}
+h4{font-size:var(--t-md);margin:var(--s-5) 0 var(--s-2)}
+p{max-width:78ch;color:var(--c-text-2);font-size:var(--t-md)}
+.lede{font-size:var(--t-lg);color:var(--c-text-2);max-width:70ch}
+.muted{color:var(--c-text-3);font-size:var(--t-sm)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;
+  background:var(--c-surface-2);padding:.12em .4em;border-radius:6px}
+.card{background:var(--c-surface);border:1px solid var(--c-border);
+  border-radius:var(--r-lg);padding:var(--s-5);box-shadow:var(--shadow-sm)}
+.grid{display:grid;gap:var(--s-4)}
+.note{border-left:3px solid var(--c-accent-ui);background:var(--c-surface-2);
+  padding:var(--s-4);border-radius:0 var(--r-md) var(--r-md) 0;margin:var(--s-4) 0}
+.note p{margin:0;color:var(--c-text)}
+
+/* -------- rampas -------- */
+.ramp{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:var(--s-2);margin:var(--s-3) 0}
+.sw{border-radius:var(--r-md);overflow:hidden;border:1px solid var(--c-border)}
+.sw .chip{height:64px;display:flex;align-items:flex-end;justify-content:flex-end;padding:6px 8px;
+  font-size:11px;font-weight:700}
+.sw .meta{background:var(--c-surface);padding:var(--s-2);font-size:11px;line-height:1.5;color:var(--c-text-2)}
+.sw .meta b{display:block;color:var(--c-text);font-size:12px;font-family:ui-monospace,monospace}
+.sw .meta em{font-style:normal;color:var(--c-text-3)}
+
+/* -------- tabela de contraste -------- */
+table{width:100%;border-collapse:collapse;font-size:var(--t-sm);margin:var(--s-3) 0}
+th,td{text-align:left;padding:var(--s-2) var(--s-3);border-bottom:1px solid var(--c-border);vertical-align:middle}
+th{font-size:var(--t-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--c-text-3)}
+td.num{font-family:ui-monospace,monospace;text-align:right;white-space:nowrap}
+.dot{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid var(--c-border);
+  vertical-align:-2px;margin-right:6px}
+.tag{display:inline-block;font-size:var(--t-xs);font-weight:700;padding:2px 8px;border-radius:var(--r-pill);white-space:nowrap}
+.tag.pass{background:var(--c-ok-soft);color:var(--c-ok)}
+.tag.fail{background:var(--c-danger-soft);color:var(--c-danger)}
+.tag.aaa{background:var(--c-accent-soft);color:var(--c-accent-ink)}
+.tag.warn{background:var(--c-warn-soft);color:var(--c-warn)}
+
+/* -------- maquete do app -------- */
+.mock{border:1px solid var(--c-border);border-radius:var(--r-lg);overflow:hidden;
+  background:var(--c-bg);box-shadow:var(--shadow-md);display:flex;min-height:520px}
+.mock.sm{min-height:360px}
+.mk-side{width:var(--sidebar-w);flex:0 0 var(--sidebar-w);background:var(--c-sidebar-bg);
+  border-right:1px solid var(--c-border);padding:var(--s-4) var(--s-3);display:flex;flex-direction:column;gap:var(--s-1)}
+.mk-side.rail{width:var(--sidebar-w-rail);flex-basis:var(--sidebar-w-rail);align-items:stretch;padding:var(--s-4) var(--s-2)}
+.mk-logo{display:flex;align-items:center;gap:var(--s-3);padding:var(--s-2) var(--s-3) var(--s-5)}
+.mk-logo .m{width:32px;height:32px;border-radius:9px;background:var(--c-accent-ui);flex:0 0 32px;
+  display:grid;place-items:center;color:var(--c-accent-text)}
+.mk-logo b{font-size:var(--t-md);letter-spacing:-.01em}
+.mk-logo small{display:block;font-size:11px;color:var(--c-text-3);font-weight:500}
+.nav-i{display:flex;align-items:center;gap:var(--s-3);min-height:var(--tap);
+  padding:0 var(--s-3);border-radius:var(--r-md);color:var(--c-text-2);
+  font-size:var(--t-md);font-weight:550;cursor:default}
+.nav-i .ic{width:24px;height:24px;flex:0 0 24px;display:grid;place-items:center}
+.nav-i[aria-current]{background:var(--c-sidebar-item-active);color:var(--c-text);font-weight:700}
+.nav-i[aria-current] .ic{color:var(--c-accent)}
+.nav-i.rail-i{flex-direction:column;gap:2px;min-height:60px;padding:var(--s-2) 0;
+  font-size:11px;font-weight:600;text-align:center;justify-content:center}
+.mk-side .foot{margin-top:auto;border-top:1px solid var(--c-border);padding-top:var(--s-2)}
+.mk-main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--c-bg)}
+.mk-head{min-height:var(--header-h);border-bottom:1px solid var(--c-border);
+  display:flex;align-items:center;gap:var(--s-3);padding:var(--s-3) var(--s-5);flex-wrap:wrap}
+.mk-head h5{margin:0;font-size:var(--t-xl);letter-spacing:-.01em;margin-right:auto}
+.mk-body{padding:var(--s-5);flex:1;overflow:hidden;position:relative}
+
+.chip{display:inline-flex;align-items:center;gap:var(--s-2);min-height:40px;padding:0 var(--s-4);
+  border-radius:var(--r-pill);border:1px solid var(--c-border-strong);
+  background:transparent;color:var(--c-text-2);font-size:var(--t-sm);font-weight:600}
+.chip[aria-pressed=true]{background:var(--c-accent-soft);color:var(--c-accent-ink);
+  border-color:transparent;font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-2);
+  min-height:var(--tap);padding:0 var(--s-5);border-radius:var(--r-pill);border:1px solid transparent;
+  background:var(--c-accent);color:var(--c-accent-text);font-size:var(--t-md);font-weight:700;cursor:default}
+.btn.big{min-height:56px;box-shadow:var(--shadow-glow)}
+.btn.stop{background:var(--c-live);color:#fff}
+:root[data-theme=dark] .btn.stop{color:#3a1620}
+.btn.ghost{background:transparent;border-color:var(--c-border-strong);color:var(--c-text)}
+
+/* transcript */
+.tx{display:flex;flex-direction:column;gap:var(--s-4);max-width:var(--content-max)}
+.bub{background:var(--c-surface-3);color:var(--c-text);border-radius:var(--r-lg);
+  padding:var(--s-4) var(--s-5);max-width:62ch;
+  font-size:var(--t-transcript);line-height:var(--lh-transcript)}
+.bub.last{background:var(--c-accent-soft);box-shadow:var(--shadow-glow)}
+.bub-meta{font-size:var(--t-xs);color:var(--c-text-3);margin:0 0 var(--s-1) var(--s-2)}
+
+/* medidor de nível */
+.meter{display:flex;align-items:flex-end;gap:3px;height:32px}
+.meter i{width:6px;background:var(--c-accent-ui);border-radius:var(--r-pill);display:block}
+.track{height:8px;border-radius:var(--r-pill);background:var(--c-surface-2);overflow:hidden}
+.track i{display:block;height:100%;background:var(--c-accent-ui);border-radius:var(--r-pill)}
+
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:var(--t-xs);font-weight:700;
+  padding:3px 10px;border-radius:var(--r-pill)}
+.badge.live{background:var(--c-live-soft);color:var(--c-live)}
+.badge.ok{background:var(--c-ok-soft);color:var(--c-ok)}
+.badge.warnb{background:var(--c-warn-soft);color:var(--c-warn)}
+.badge.acc{background:var(--c-accent-soft);color:var(--c-accent-ink)}
+
+.row{display:flex;align-items:center;gap:var(--s-3);min-height:72px;
+  padding:var(--s-3) var(--s-4);border-bottom:1px solid var(--c-border)}
+.row .ic{width:44px;height:44px;flex:0 0 44px;border-radius:var(--r-md);
+  background:var(--c-accent-soft);color:var(--c-accent);display:grid;place-items:center}
+.row .g{min-width:0;flex:1}
+.row .t{font-size:var(--t-md);font-weight:650;color:var(--c-text)}
+.row .p{font-size:var(--t-sm);color:var(--c-text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .m{font-size:var(--t-xs);color:var(--c-text-3)}
+.search{display:flex;align-items:center;gap:var(--s-3);min-height:var(--tap);padding:0 var(--s-4);
+  border-radius:var(--r-pill);border:1px solid var(--c-border-strong);
+  background:var(--c-surface);color:var(--c-text-3);font-size:var(--t-md)}
+.grp{font-size:var(--t-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--c-text-3);
+  font-weight:700;padding:var(--s-4) var(--s-4) var(--s-2)}
+.setrow{display:flex;align-items:center;gap:var(--s-4);min-height:64px;padding:var(--s-3) var(--s-4);
+  border-bottom:1px solid var(--c-border)}
+.setrow .g{flex:1;min-width:0}
+.setrow .t{font-size:var(--t-md);font-weight:650}
+.setrow .d{font-size:var(--t-sm);color:var(--c-text-2)}
+.setrow .v{font-size:var(--t-md);color:var(--c-accent);font-weight:650;white-space:nowrap}
+.seg{display:inline-flex;border:1px solid var(--c-border-strong);border-radius:var(--r-pill);overflow:hidden}
+.seg span{min-height:44px;display:grid;place-items:center;padding:0 var(--s-4);
+  font-size:var(--t-sm);font-weight:650;color:var(--c-text-2);border-right:1px solid var(--c-border-strong)}
+.seg span:last-child{border-right:0}
+.seg span[aria-checked=true]{background:var(--c-accent-soft);color:var(--c-accent-ink);font-weight:750}
+.drop{border:2px dashed var(--c-border-strong);border-radius:var(--r-lg);background:var(--c-surface-2);
+  padding:var(--s-5);text-align:center}
+
+.glow{position:absolute;inset:auto 0 auto 0;top:-40px;height:220px;pointer-events:none;
+  background:radial-gradient(60% 80% at 70% 0%, var(--c-glow), transparent 70%)}
+.glass{background:var(--c-glass-bg);border:1px solid var(--c-glass-border);
+  border-radius:var(--r-xl);padding:var(--s-5);backdrop-filter:blur(14px)}
+
+/* referências */
+.refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s-4)}
+figure{margin:0;background:var(--c-surface);border:1px solid var(--c-border);
+  border-radius:var(--r-md);overflow:hidden;display:flex;flex-direction:column}
+figure img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--c-surface-2)}
+figcaption{padding:var(--s-3);font-size:var(--t-xs);color:var(--c-text-2);
+  display:flex;flex-direction:column;gap:6px;flex:1}
+figcaption .v{display:flex;gap:4px;flex-wrap:wrap}
+figcaption a{font-size:11px;word-break:break-all;color:var(--c-accent);text-decoration:none}
+figcaption a:hover{text-decoration:underline}
+figcaption .why{color:var(--c-text-2);line-height:1.5}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-5)}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-4)}
+@media (max-width:900px){.two,.three{grid-template-columns:1fr}}
+
+.opt-h{display:flex;align-items:baseline;gap:var(--s-3);flex-wrap:wrap;margin-top:var(--s-6)}
+.opt-h .tag{position:relative;top:-2px}
+ul{color:var(--c-text-2);font-size:var(--t-md);max-width:78ch}
+li{margin-bottom:var(--s-2)}
+.px{font-family:ui-monospace,monospace;font-size:11px;color:var(--c-text-3)}
+hr{border:0;border-top:1px solid var(--c-border);margin:var(--s-7) 0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Open Ear <small>Turning sound into sight — proposta visual</small></div>
+  <nav class="jump">
+    <a href="#paleta">Paleta</a>
+    <a href="#prova">Prova a11y</a>
+    <a href="#nav">Sidebar</a>
+    <a href="#transcritor">Transcritor</a>
+    <a href="#telas">Outras telas</a>
+    <a href="#refs">Referências</a>
+    <a href="#veredito">Veredito</a>
+  </nav>
+  <button class="tbtn" id="themeBtn" type="button" aria-pressed="true">☾ Tema escuro</button>
+</div>
+
+<div class="wrap">
+
+<h2 style="margin-top:var(--s-6)">O problema desta rodada, em um par de cores</h2>
+<p class="lede">O usuário pediu Miami blue. Miami blue puro sobre branco dá
+<b>2,55:1</b> — reprova AA (4,5) e reprova até o AA de texto grande (3,0). Num app
+onde o texto <em>é</em> o único canal de comunicação, isso não é detalhe: é o
+projeto inteiro. A resposta não foi trocar a cor, foi construir uma rampa e
+aceitar que <b>a marca não é um hex, é uma posição na rampa que depende do fundo</b>.</p>
+
+<div class="note"><p><b>Tema escuro é o protagonista</b> — e não por moda. Sobre
+near-black o ciano <em>soma</em> luz (cyan-400 = 7,31:1, passa AAA). Sobre branco ele
+<em>subtrai</em> contraste. O tema claro existe para rua ensolarada e está igualmente
+validado: nenhum par passa raspando.</p></div>
+
+<div class="card" style="margin-top:var(--s-5)">
+  <h4 style="margin-top:0">A prova do problema</h4>
+  <table>
+    <thead><tr><th>par</th><th>razão</th><th>veredito</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#00b0dc"></span><code>#00B0DC</code> sobre <code>#FFFFFF</code></td><td class="num">2.55</td><td><span class="tag fail">reprova AA e AA-grande</span></td></tr>
+      <tr><td><span class="dot" style="background:#00b0dc"></span><code>#FFFFFF</code> sobre <code>#00B0DC</code></td><td class="num">2.55</td><td><span class="tag fail">botão ilegível</span></td></tr>
+      <tr><td><span class="dot" style="background:#00728f"></span><code>#00728F</code> (cyan-700) sobre <code>#FFFFFF</code></td><td class="num">5.52</td><td><span class="tag pass">AA — o ciano-texto do claro</span></td></tr>
+      <tr><td><span class="dot" style="background:#0090b6"></span><code>#0090B6</code> (cyan-600) sobre <code>#FFFFFF</code></td><td class="num">3.71</td><td><span class="tag pass">non-text — medidor/barra no claro</span></td></tr>
+      <tr><td><span class="dot" style="background:#00b0dc"></span><code>#00B0DC</code> sobre <code>#16202D</code></td><td class="num">6.45</td><td><span class="tag pass">Miami blue puro vive aqui</span></td></tr>
+      <tr><td><span class="dot" style="background:#18bce4"></span><code>#18BCE4</code> (cyan-400) sobre <code>#16202D</code></td><td class="num">7.31</td><td><span class="tag aaa">AAA — accent do escuro</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="paleta">1 · A paleta</h2>
+<p>Duas rampas. Cada amostra traz o hex e o contraste contra branco / near-black.
+Os cinzas são <b>frios</b> (hue ~218): cinza neutro encostado em ciano é lido como
+bege sujo por contraste simultâneo, e o frio faz o ciano parecer mais saturado
+sem gastar um ponto de razão de contraste.</p>
+
+<h3>Rampa Miami blue — âncora de marca em 500</h3>
+<div class="ramp" id="rampCyan"></div>
+
+<h3>Rampa cinza frio</h3>
+<div class="ramp" id="rampGrey"></div>
+
+<!-- ==================================================================== -->
+<h2 id="prova">2 · Prova de acessibilidade</h2>
+<p>Esta tabela <b>não é digitada</b>: o artifact lê a cor computada de cada custom
+property no tema ativo e calcula a razão WCAG na hora. Troque o tema no topo e
+os números recalculam. Se algo aparecer vermelho, é bug real, não erro de
+transcrição.</p>
+
+<div class="card">
+  <div style="display:flex;gap:var(--s-4);align-items:center;flex-wrap:wrap;margin-bottom:var(--s-3)">
+    <b id="scoreLine" style="font-size:var(--t-lg)"></b>
+    <span class="muted">tema ativo: <b id="themeName">escuro</b></span>
+  </div>
+  <table>
+    <thead><tr><th>par</th><th>uso</th><th>razão</th><th>mínimo</th><th></th></tr></thead>
+    <tbody id="proofBody"></tbody>
+  </table>
+</div>
+
+<h3>Tamanhos de fonte, em px</h3>
+<div class="card">
+<table>
+  <thead><tr><th>token</th><th>px</th><th>onde</th><th>regra</th></tr></thead>
+  <tbody>
+    <tr><td><code>--t-xs</code></td><td class="num">13</td><td>duração, tamanho de arquivo, data</td><td><span class="tag warn">só metadado — nunca conteúdo</span></td></tr>
+    <tr><td><code>--t-sm</code></td><td class="num">15</td><td>rótulo de controle, prévia de lista</td><td><span class="tag pass">ok</span></td></tr>
+    <tr><td><code>--t-md</code></td><td class="num">17</td><td>corpo da UI, campo de busca</td><td><span class="tag pass">ok</span></td></tr>
+    <tr><td><code>--t-lg</code></td><td class="num">20</td><td>título de cartão</td><td><span class="tag pass">ok</span></td></tr>
+    <tr><td><code>--t-xl</code></td><td class="num">26</td><td>título de tela</td><td><span class="tag pass">ok</span></td></tr>
+    <tr><td><code>--t-2xl</code></td><td class="num">34</td><td>display de seção</td><td><span class="tag pass">ok</span></td></tr>
+    <tr><td><code>--t-3xl</code></td><td class="num">48</td><td>display — pode brincar com gradiente</td><td><span class="tag warn">corpo e transcript, não</span></td></tr>
+    <tr><td><b><code>--t-transcript</code></b></td><td class="num"><b>22</b></td><td><b>o produto</b> — controlado pelo usuário</td><td><span class="tag aaa">piso 18px · AAA 7:1</span></td></tr>
+    <tr><td><code>--tap</code></td><td class="num">48</td><td>alvo de toque</td><td><span class="tag aaa">WCAG 2.2 pede 24 — subimos</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ==================================================================== -->
+<h2 id="nav">3 · Sidebar — 3 opções, 1 adotada</h2>
+<p>Três formas do mesmo shell de 4 seções. A <b>Opção B está adotada e já
+integrada no app</b>; A e C ficam registradas com o trade-off que as derrubou.</p>
+
+<div class="opt-h"><h3 style="margin:0">Opção A — rail de 76px, ícone + rótulo</h3><span class="tag warn">recusada</span></div>
+<p>Devolve ~170px de largura ao conteúdo. Veio do
+<a href="pins/sidebar-navigation-app-ui-dark/07--modern-sidebar-navigation-dark-ui-app-card-ui-de--dribbble.jpg">Modern Sidebar Navigation</a>,
+onde o mesmo menu aparece como rail e como painel lado a lado — mas ali o rail é
+<b>só ícone</b>, o que o §0 proíbe. Aqui o rótulo é permanente, nunca tooltip.</p>
+<div class="mock sm">
+  <div class="mk-side rail">
+    <div class="nav-i rail-i" aria-current="page"><span class="ic">◉</span>Transcritor</div>
+    <div class="nav-i rail-i"><span class="ic">▤</span>Transcrições</div>
+    <div class="nav-i rail-i"><span class="ic">♪</span>Biblioteca</div>
+    <div class="nav-i rail-i foot" style="margin-top:auto"><span class="ic">⚙</span>Ajustes</div>
+  </div>
+  <div class="mk-main"><div class="mk-head"><h5>Transcritor</h5></div>
+    <div class="mk-body"><p style="margin-top:0">Mais espaço horizontal. O custo: com
+    rótulo de 11px sob o ícone, palavras longas quebram feio — <code>Transcrições</code>
+    e <code>Transcritor</code> começam com as mesmas 7 letras e ficam quase idênticas
+    num rail estreito. Em i18n (alemão, "Transkriptionen") piora.</p></div>
+  </div>
+</div>
+
+<div class="opt-h"><h3 style="margin:0">Opção B — 248px, ícone + rótulo, gaveta abaixo de 60rem</h3><span class="tag pass">adotada · já no app</span></div>
+<p>Rótulo em 17px lado a lado com o ícone, alvo de 48px, item ativo com pílula
+<code>--c-accent-soft</code> (rótulo a 16,77:1 no claro, 13,18:1 no escuro) e ícone em
+<code>--c-accent</code>. Ajustes descolado no rodapé. Abaixo de 60rem vira gaveta.
+Origem: <a href="pins/sidebar-navigation-app-ui-dark/04--sidebar-menu-account-switcher-app-shell-clean-da--dribbble.jpg">Sidebar menu</a>
+(rodapé utilitário) + <a href="../transcriber/pins/live-caption-ui/02--cloome-smart-meeting-saas-dashboard-with-ai-inte--dribbble.jpg">Cloome</a>
+(pílula tingida do item ativo).</p>
+<div class="mock sm">
+  <div class="mk-side">
+    <div class="mk-logo"><span class="m">◉</span><span><b>Open Ear</b><small>Turning sound into sight</small></span></div>
+    <div class="nav-i" aria-current="page"><span class="ic">◉</span>Transcritor</div>
+    <div class="nav-i"><span class="ic">▤</span>Transcrições</div>
+    <div class="nav-i"><span class="ic">♪</span>Biblioteca</div>
+    <div class="foot"><div class="nav-i"><span class="ic">⚙</span>Ajustes</div></div>
+  </div>
+  <div class="mk-main"><div class="mk-head"><h5>Transcritor</h5></div>
+    <div class="mk-body"><p style="margin-top:0">O rótulo é lido de relance, sem
+    decodificar ícone. Para quem tem o português como segunda língua (§0: Libras é
+    primeira língua de muitos usuários), ícone + palavra juntos são muito mais
+    rápidos que ícone sozinho. 248px cabem rótulos traduzidos sem quebrar.</p></div>
+  </div>
+</div>
+
+<div class="opt-h"><h3 style="margin:0">Opção C — 248px colapsável pelo usuário</h3><span class="tag warn">recusada</span></div>
+<p>B + um chevron na aresta que alterna para o rail (padrão do
+<a href="pins/sidebar-navigation-app-ui-dark/01--ai-dashboard-sidebar-dark-light-web-app-ui-desig--dribbble.jpg">AI Dashboard Sidebar</a>).
+Recusada por custo/benefício: com <b>4 itens</b>, o ganho de 170px é pequeno e o
+preço é um estado persistente a mais, um alvo extra na ordem de tabulação e duas
+variantes de cada tela para validar. Numa ferramenta de conversa ao vivo, a
+navegação deve ser a coisa mais estável da tela.</p>
+
+<!-- ==================================================================== -->
+<h2 id="transcritor">4 · Transcritor — a tela que mais importa</h2>
+<p>Abas <b>Ao vivo</b> / <b>Arquivo</b>. Em ≥1024px o transcript domina e uma coluna
+estreita carrega estado e controles; abaixo disso os controles descem para uma
+barra fixa e o transcript ganha a tela inteira.</p>
+
+<div class="mock">
+  <div class="mk-side">
+    <div class="mk-logo"><span class="m">◉</span><span><b>Open Ear</b><small>Turning sound into sight</small></span></div>
+    <div class="nav-i" aria-current="page"><span class="ic">◉</span>Transcritor</div>
+    <div class="nav-i"><span class="ic">▤</span>Transcrições</div>
+    <div class="nav-i"><span class="ic">♪</span>Biblioteca</div>
+    <div class="foot"><div class="nav-i"><span class="ic">⚙</span>Ajustes</div></div>
+  </div>
+  <div class="mk-main">
+    <div class="mk-head">
+      <h5>Transcritor</h5>
+      <div class="seg" role="tablist">
+        <span role="tab" aria-checked="true">Ao vivo</span>
+        <span role="tab" aria-checked="false">Arquivo</span>
+      </div>
+      <span class="chip" aria-pressed="false">🌐 Português (BR) ⌄</span>
+    </div>
+    <div class="mk-body" style="display:flex;gap:var(--s-5)">
+      <div class="glow" aria-hidden="true"></div>
+      <div style="flex:1;min-width:0;position:relative">
+        <div class="tx" aria-live="polite">
+          <div>
+            <div class="bub-meta">14:02</div>
+            <div class="bub">Então a gente marca a consulta para quinta de manhã, pode ser?</div>
+          </div>
+          <div>
+            <div class="bub-meta">14:02</div>
+            <div class="bub">Quinta eu tenho aula até as dez. Depois das onze funciona.</div>
+          </div>
+          <div>
+            <div class="bub-meta"><span class="badge acc">última fala</span> &nbsp;14:03</div>
+            <div class="bub last">Perfeito. Vou deixar marcado para as onze e meia, então.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="width:300px;flex:0 0 300px;display:flex;flex-direction:column;gap:var(--s-4);position:relative">
+        <div class="card" style="padding:var(--s-4)">
+          <div style="display:flex;align-items:center;gap:var(--s-2);margin-bottom:var(--s-3)">
+            <span class="badge live">● Gravando</span>
+            <b style="font-family:ui-monospace,monospace;font-size:var(--t-lg);margin-left:auto">00:32</b>
+          </div>
+          <div class="meter" aria-hidden="true">
+            <i style="height:9px"></i><i style="height:17px"></i><i style="height:26px"></i><i style="height:14px"></i>
+            <i style="height:30px"></i><i style="height:21px"></i><i style="height:11px"></i><i style="height:24px"></i>
+            <i style="height:32px"></i><i style="height:16px"></i><i style="height:8px"></i><i style="height:19px"></i>
+          </div>
+          <div class="muted" style="margin-top:var(--s-2)"><b style="color:var(--c-text-2)">Captando som</b> — as barras se mexem quando o microfone pega.</div>
+        </div>
+
+        <div style="display:flex;gap:var(--s-2)">
+          <span class="btn stop big" style="flex:1">■ Parar</span>
+          <span class="btn ghost" style="padding:0 var(--s-4)">❚❚</span>
+        </div>
+        <div class="muted">Cada estado tem ícone <b>e</b> palavra. Nada aqui depende de som.</div>
+
+        <div class="glass" style="margin-top:auto" aria-hidden="true">
+          <div class="muted" style="margin-bottom:6px">ornamento</div>
+          <div style="font-size:var(--t-lg);font-weight:700">Vidro só aqui</div>
+          <div class="muted">Área sem leitura, <code>aria-hidden</code>. Nunca atrás do transcript.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<div class="two" style="margin-top:var(--s-5)">
+  <div class="card">
+    <h4 style="margin-top:0">Por que a última fala é <em>cor</em>, não tamanho</h4>
+    <p style="margin-bottom:0">Aumentar a fonte da última fala reflui o layout a cada
+    segmento novo e faz o texto pular. Numa conversa real a pessoa alterna o olhar
+    entre a tela e o rosto do interlocutor — se o texto se move, ela perde o lugar na
+    volta. Então o destaque é fundo <code>--c-accent-soft</code> <b>sólido</b> + o único
+    <code>--shadow-glow</code> da tela, e a métrica de tipo não muda nunca.</p>
+  </div>
+  <div class="card">
+    <h4 style="margin-top:0">O medidor é feature, não enfeite</h4>
+    <p style="margin-bottom:0">Quem não ouve não confirma pelo ouvido que o microfone
+    pegou. As barras usam <code>--c-accent-ui</code> (6,45:1 no escuro, 3,71:1 no claro —
+    passa o non-text 3:1) e vêm <b>sempre com rótulo textual</b>: barra parada e barra
+    ausente parecem a mesma coisa para quem não conhece o padrão. Com
+    <code>prefers-reduced-motion</code> as barras congelam e o rótulo vira o sinal principal.</p>
+  </div>
+</div>
+
+<div class="note"><p><b>O que foi recusado da referência de imagem aqui:</b> o
+transcript nunca fica sobre vidro. Translucidez + <code>backdrop-filter</code> fazem a
+razão de contraste depender do que passa por trás — não se prova 7:1 num fundo
+que muda. O vidro ficou no cartão de ornamento à direita, <code>aria-hidden</code>, em
+área sem leitura.</p></div>
+
+<!-- ==================================================================== -->
+<h2 id="telas">5 · As outras três telas</h2>
+
+<h3>Transcrições — busca no texto todo</h3>
+<div class="mock sm">
+  <div class="mk-side" style="width:200px;flex-basis:200px">
+    <div class="nav-i"><span class="ic">◉</span>Transcritor</div>
+    <div class="nav-i" aria-current="page"><span class="ic">▤</span>Transcrições</div>
+    <div class="nav-i"><span class="ic">♪</span>Biblioteca</div>
+    <div class="foot"><div class="nav-i"><span class="ic">⚙</span>Ajustes</div></div>
+  </div>
+  <div class="mk-main">
+    <div class="mk-head"><h5>Transcrições</h5></div>
+    <div class="mk-body" style="padding:0">
+      <div style="padding:var(--s-4)">
+        <div class="search">🔍 Buscar em todo o texto…</div>
+        <div class="muted" style="margin-top:var(--s-2)" aria-live="polite">3 transcrições encontradas</div>
+      </div>
+      <div class="grp">Hoje</div>
+      <div class="row"><span class="ic">▤</span><div class="g">
+        <div class="t">Consulta — remarcação</div>
+        <div class="p">Então a gente marca a consulta para quinta de manhã, pode ser?</div>
+        <div class="m">14:03 · 2 min · <span class="badge acc">ao vivo</span></div></div></div>
+      <div class="row"><span class="ic">▤</span><div class="g">
+        <div class="t">Reunião de equipe</div>
+        <div class="p">Vamos começar pelo relatório de setembro, se todo mundo já…</div>
+        <div class="m">09:15 · 34 min · <span class="badge ok">de arquivo</span></div></div></div>
+      <div class="grp">Últimos 7 dias</div>
+      <div class="row"><span class="ic">▤</span><div class="g">
+        <div class="t">Aula de história</div>
+        <div class="p">A questão central do período não é a data em si, mas o que…</div>
+        <div class="m">18 ago · 51 min · <span class="badge acc">ao vivo</span></div></div></div>
+    </div>
+  </div>
+</div>
+<p class="muted">Agrupamento por recência (<a href="../transcriptions/pins/search-list-archive-ui-dark-app/02--ai-tool-mobile-app-all-conversations-screen-desi--dribbble.jpg">All Conversations</a>),
+prévia de 2 linhas como título útil (<a href="../transcriptions/pins/notes-history-list-search-ui/03--notes-app-figma-ui-ux-vector-web--dribbble.jpg">Notes App</a>).
+Contador de resultado em <code>aria-live</code> — sem ele, quem não ouve não sabe que a busca respondeu.</p>
+
+<h3>Biblioteca — fila de trabalho, não galeria</h3>
+<div class="mock sm">
+  <div class="mk-side" style="width:200px;flex-basis:200px">
+    <div class="nav-i"><span class="ic">◉</span>Transcritor</div>
+    <div class="nav-i"><span class="ic">▤</span>Transcrições</div>
+    <div class="nav-i" aria-current="page"><span class="ic">♪</span>Biblioteca</div>
+    <div class="foot"><div class="nav-i"><span class="ic">⚙</span>Ajustes</div></div>
+  </div>
+  <div class="mk-main">
+    <div class="mk-head"><h5>Biblioteca</h5>
+      <span class="chip" aria-pressed="true">Todos</span>
+      <span class="chip" aria-pressed="false">Guardados</span>
+      <span class="chip" aria-pressed="false">Prontos</span>
+    </div>
+    <div class="mk-body" style="padding:0">
+      <div style="padding:var(--s-4)"><div class="drop">
+        <div style="font-size:var(--t-md);font-weight:650;margin-bottom:var(--s-2)">Arraste áudios aqui</div>
+        <span class="btn ghost">Escolher arquivos</span>
+        <div class="muted" style="margin-top:var(--s-2)">Arrastar é atalho, nunca requisito.</div>
+      </div></div>
+      <div class="row"><span class="ic">♪</span><div class="g">
+        <div class="t">reuniao-setembro.m4a</div>
+        <div class="m">34:12 · 18,4 MB · 20 ago</div></div>
+        <span class="badge ok">✓ Pronto</span><span class="btn ghost" style="min-height:40px;padding:0 var(--s-4)">Abrir</span></div>
+      <div class="row"><span class="ic">♪</span><div class="g">
+        <div class="t">aula-historia.mp3</div>
+        <div class="m">51:07 · 24,1 MB · 18 ago</div>
+        <div class="track" style="margin-top:6px;max-width:220px"><i style="width:40%"></i></div></div>
+        <span class="badge acc">Transcrevendo 40%</span></div>
+      <div class="row"><span class="ic">♪</span><div class="g">
+        <div class="t">entrevista.wav</div>
+        <div class="m">12:44 · 63,8 MB · 17 ago</div></div>
+        <span class="badge warnb">◷ Na fila</span><span class="btn" style="min-height:40px;padding:0 var(--s-4)">Transcrever</span></div>
+    </div>
+  </div>
+</div>
+<p class="muted">Anatomia da linha e chips de filtro vindos do
+<a href="../library/pins/audio-files-list-ui-player/03--noise-reducer-app-audio-recorder-file-management--dribbble.jpg">Noise Reducer</a>.
+Todo estado leva <b>ícone + palavra</b>, nunca só cor. Barra de progresso em
+<code>--c-accent-ui</code>. Nome do arquivo nunca sobre miniatura — contraste sobre imagem é imprevisível.</p>
+
+<h3>Ajustes — leitura vem primeiro</h3>
+<div class="mock sm">
+  <div class="mk-side" style="width:200px;flex-basis:200px">
+    <div class="nav-i"><span class="ic">◉</span>Transcritor</div>
+    <div class="nav-i"><span class="ic">▤</span>Transcrições</div>
+    <div class="nav-i"><span class="ic">♪</span>Biblioteca</div>
+    <div class="foot"><div class="nav-i" aria-current="page"><span class="ic">⚙</span>Ajustes</div></div>
+  </div>
+  <div class="mk-main">
+    <div class="mk-head"><h5>Ajustes</h5></div>
+    <div class="mk-body" style="padding:0;overflow:auto">
+      <div class="grp">Leitura</div>
+      <div class="setrow" style="flex-direction:column;align-items:stretch;gap:var(--s-3)">
+        <div><div class="t">Tamanho do texto</div>
+          <div class="d">Vale para a transcrição. Mínimo 18 px.</div></div>
+        <div class="seg" role="radiogroup">
+          <span role="radio" aria-checked="false">18</span>
+          <span role="radio" aria-checked="true">22</span>
+          <span role="radio" aria-checked="false">26</span>
+          <span role="radio" aria-checked="false">32</span>
+          <span role="radio" aria-checked="false">40</span>
+        </div>
+        <div class="bub" style="max-width:none">Amostra ao vivo: é assim que a fala vai aparecer.</div>
+      </div>
+      <div class="grp">Idioma e região</div>
+      <div class="setrow"><div class="g"><div class="t">Idioma do app</div>
+        <div class="d">Menus, botões e avisos.</div></div><div class="v">Português (BR) ›</div></div>
+      <div class="setrow"><div class="g"><div class="t">Idioma do áudio</div>
+        <div class="d">O que a transcrição espera ouvir.</div></div><div class="v">Português (BR) ›</div></div>
+      <div class="setrow"><div class="g"><div class="t">Região</div>
+        <div class="d">Formato de data e hora.</div></div><div class="v">Brasil ›</div></div>
+      <div class="grp">Aparência</div>
+      <div class="setrow"><div class="g"><div class="t">Tema</div>
+        <div class="d">Escuro rende melhor; claro é para sol na tela.</div></div>
+        <div class="seg" role="radiogroup">
+          <span role="radio" aria-checked="false">Claro</span>
+          <span role="radio" aria-checked="true">Escuro</span>
+          <span role="radio" aria-checked="false">Sistema</span>
+        </div></div>
+    </div>
+  </div>
+</div>
+<p class="muted">Anatomia "rótulo + descrição concreta à esquerda, valor visível à direita" do
+<a href="../settings/pins/accessibility-settings-text-size-app-ui/05--accessible-news-profile-page-animation-app-brand--dribbble.jpg">Accessible News</a>,
+grupos rotulados do <a href="../transcriber/pins/transcription-app-interface-clean/05--voice-recording-transcription-app-design-audio-r--dribbble.jpg">Wavelogs</a>.
+Tema é rádio de 3 estados, não toggle: toggle de duas posições não expressa "siga o sistema".
+Idioma do app, idioma do áudio e região são <b>três coisas diferentes</b> — dá para usar a UI em
+português e legendar uma reunião em inglês.</p>
+
+<!-- ==================================================================== -->
+<h2 id="refs">6 · As referências que originaram cada decisão</h2>
+<div class="note"><p><b>Pinterest: 🔴 não funcionou.</b> Rodei
+<code>--source pinterest</code> primeiro, como pedido. O coletor devolveu
+<b>exit code 4</b> — "exige sessão salva" — porque não existe
+<code>tools/.pinterest-session.json</code>. Nenhum pin foi coletado e <b>nenhum pin é
+citado em lugar nenhum deste estudo</b>. Para habilitar, rode uma vez
+<code>node tools/pinterest-login.mjs</code> (Chromium abre, você loga na mão) e eu refaço a busca.
+As <b>83 referências</b> coletadas vieram todas do Dribbble, que funcionou nas 11 queries.</p></div>
+<p>Só aparecem aqui as referências que eu <b>abri com <code>Read</code></b> e realmente
+analisei. As demais estão em disco, nas pastas <code>pins/</code>, mas não sustentam
+nenhuma decisão — e por isso não são citadas.</p>
+
+<div class="refs" id="refGrid"></div>
+
+<!-- ==================================================================== -->
+<h2 id="veredito">7 · Veredito ♿ — o que passou e o que ficou de risco</h2>
+
+<div class="two">
+  <div class="card">
+    <h4 style="margin-top:0"><span class="tag pass">passou</span></h4>
+    <ul>
+      <li><b>84/84 pares</b> de cor validados nos dois temas por <code>designs/_design-system/contrast.mjs</code> — e os 27 pares críticos são <b>recalculados ao vivo</b> nesta página (54/54 somando os dois temas).</li>
+      <li><b>Transcript em AAA</b> em todas as 5 superfícies onde ele pode cair — surface, bg, surface-2, surface-3 e accent-soft. Pior caso <b>9,86:1</b> (bolha no escuro), contra o mínimo de 7.</li>
+      <li><b>Miami blue preservado como marca</b> e usado onde é honesto: puro no escuro (6,45:1), cyan-700 como texto no claro (5,52:1), cyan-600 como objeto gráfico no claro (3,71:1).</li>
+      <li><b>Foco visível folgado</b> nos dois temas: 5,01–8,93:1, muito acima do 3:1 exigido.</li>
+      <li><b>Alvo de toque 48px</b> — o dobro do que a WCAG 2.2 SC 2.5.8 pede.</li>
+      <li><b>Nenhum estado só por cor</b>: ícone + palavra em gravação, fila, progresso, pronto e erro.</li>
+      <li><b>Nenhum feedback só sonoro</b>: o medidor de nível é a prova visual de captação, com rótulo textual junto.</li>
+      <li><code>prefers-contrast: more</code> deixa o vidro <b>opaco</b>, o glow transparente e o foco em anel sólido.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4 style="margin-top:0"><span class="tag warn">risco em aberto</span></h4>
+    <ul>
+      <li><b>O cartão de vidro é o ponto frágil.</b> Enquanto ficar <code>aria-hidden</code> e sem texto útil, tudo bem. No dia em que alguém puser um número dentro dele, o contraste deixa de ser provável. <em>Mitigação: nenhum conteúdo informativo dentro de <code>--c-glass-*</code>, e revisar em code review.</em></li>
+      <li><b><code>--t-xs</code> (13px) é o piso e é frágil por natureza.</b> Passa AA (6,00 / 6,49) mas é pequeno. Vale só para duração, tamanho e data — nunca conteúdo. <em>Se aparecer em rótulo de ação, é bug.</em></li>
+      <li><b>Dois pares passam raspando, ambos no tema claro.</b> <code>--c-accent-ui</code> sobre <code>--c-surface-2</code> = <b>3,09</b> contra o mínimo 3,0 (barra de progresso dentro da trilha) e <code>--c-border-strong</code> sobre <code>--c-surface</code> = <b>3,31</b>. <em>Qualquer clareamento futuro dessas cores quebra o non-text. Rodar a régua antes de mexer.</em></li>
+      <li><b><code>--c-text-3</code> sobre <code>--c-surface-2</code> é o texto mais apertado:</b> 5,01:1 no claro. Passa AA, mas não sobra. <em>Não empilhar mais uma superfície sob esse texto sem recalcular.</em></li>
+      <li><b>Contraste não cobre daltonismo.</b> Live (rosa/vinho) e ok (verde) têm razão ótima mas matiz próxima para deuteranopia — por isso o ícone + palavra são obrigatórios, não recomendados.</li>
+      <li><b>O glow é decorativo e pode enganar.</b> <code>--shadow-glow</code> só em elemento interativo (botão, item ativo, última fala). Como decoração permanente ele vira ruído e sugere interatividade onde não há.</li>
+      <li><b>Não testado com leitor de tela real</b> nem com usuário surdo. A prova aqui é matemática de contraste e tamanho; falta a validação com gente. <em>É o próximo passo de maior impacto.</em></li>
+      <li><b>Cinza frio deixa miniatura de áudio levemente azulada.</b> Aceito: não temos conteúdo de pele ou comida.</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+<p class="muted">Artifact gerado pelo agente <b>Michelangelo</b> ·
+paleta em <code>frontend/src/styles/tokens.css</code> ·
+régua em <code>designs/_design-system/contrast.mjs</code> ·
+decisões em <code>designs/&lt;seção&gt;/README.md</code></p>
+
+</div>
+
+<script>
+/* ===========================================================================
+   Calculadora WCAG viva. Lê a cor COMPUTADA de cada token no tema ativo.
+   Nenhum número desta página é digitado à mão.
+   ======================================================================== */
+const probe = document.createElement('span');
+probe.style.display = 'none';
+document.body.appendChild(probe);
+
+function resolve(varName){
+  probe.style.color = 'var(' + varName + ')';
+  const c = getComputedStyle(probe).color;              // rgb(a)
+  const m = c.match(/[\d.]+/g).map(Number);
+  return [m[0], m[1], m[2]];
+}
+function toHex(rgb){
+  return '#' + rgb.map(v => Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+function lum(rgb){
+  const s = rgb.map(v => v/255).map(v => v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4));
+  return 0.2126*s[0] + 0.7152*s[1] + 0.0722*s[2];
+}
+function ratio(a, b){
+  const l = [lum(a), lum(b)].sort((x,y) => y-x);
+  return (l[0]+0.05)/(l[1]+0.05);
+}
+const r2 = (a,b) => Math.round(ratio(resolve(a), resolve(b)) * 100) / 100;
+
+/* --- rampas --- */
+const CYAN = ['50','100','200','300','400','500','600','700','800','900','950'];
+const GREY = ['0','25','50','100','200','300','400','500','600','700','800','900','950','1000'];
+
+function drawRamp(el, prefix, steps, anchor){
+  el.innerHTML = steps.map(function(s){
+    const v = '--' + prefix + '-' + s;
+    const rgb = resolve(v), hex = toHex(rgb);
+    const onWhite = Math.round(ratio(rgb,[255,255,255])*100)/100;
+    const onBlack = Math.round(ratio(rgb,resolve('--grey-1000'))*100)/100;
+    const ink = lum(rgb) > 0.35 ? '#05080d' : '#ffffff';
+    const star = (s === anchor) ? ' ★' : '';
+    return '<div class="sw"><div class="chip" style="background:' + hex + ';color:' + ink + '">'
+      + prefix + '-' + s + star + '</div><div class="meta"><b>' + hex + '</b>'
+      + '<em>vs #FFF</em> ' + onWhite.toFixed(2) + '<br>'
+      + '<em>vs near-black</em> ' + onBlack.toFixed(2) + '</div></div>';
+  }).join('');
+}
+
+/* --- pares semânticos --- */
+const PAIRS = [
+  ['--c-text','--c-surface','TRANSCRIPT sobre cartão',7],
+  ['--c-text','--c-bg','TRANSCRIPT sobre página',7],
+  ['--c-text','--c-surface-2','TRANSCRIPT sobre bloco',7],
+  ['--c-text','--c-surface-3','TRANSCRIPT na bolha de fala',7],
+  ['--c-text','--c-accent-soft','TRANSCRIPT na última fala',7],
+  ['--c-text-2','--c-surface','corpo da UI',4.5],
+  ['--c-text-2','--c-surface-2','corpo sobre bloco',4.5],
+  ['--c-text-3','--c-surface','metadado 13px',4.5],
+  ['--c-text-3','--c-surface-2','metadado sobre bloco (o par mais apertado)',4.5],
+  ['--c-text-3','--c-sidebar-bg','metadado na sidebar',4.5],
+  ['--c-text','--c-sidebar-item-active','rótulo do item ativo',7],
+  ['--c-accent','--c-surface','link / ação',4.5],
+  ['--c-accent','--c-bg','link sobre página',4.5],
+  ['--c-accent-text','--c-accent','rótulo do botão primário',4.5],
+  ['--c-accent-text','--c-accent-hover','botão primário em hover',4.5],
+  ['--c-accent-ink','--c-accent-soft','texto do badge',4.5],
+  ['--c-accent','--c-sidebar-item-active','ícone do item ativo',3],
+  ['--c-live','--c-surface','“Gravando”',4.5],
+  ['--c-live','--c-live-soft','“Gravando” no badge',4.5],
+  ['--c-ok','--c-ok-soft','“Pronto” no badge',4.5],
+  ['--c-warn','--c-warn-soft','“Na fila” no badge',4.5],
+  ['--c-danger','--c-danger-soft','erro no badge',4.5],
+  ['--c-focus','--c-bg','anel de foco',3],
+  ['--c-focus','--c-surface','anel de foco sobre cartão',3],
+  ['--c-border-strong','--c-surface','borda de campo / botão fantasma',3],
+  ['--c-accent-ui','--c-surface','medidor de nível',3],
+  ['--c-accent-ui','--c-surface-2','barra de progresso na trilha',3]
+];
+
+function drawProof(){
+  let pass = 0;
+  document.getElementById('proofBody').innerHTML = PAIRS.map(function(p){
+    const fg = p[0], bg = p[1], use = p[2], need = p[3];
+    const v = r2(fg, bg);
+    const ok = v >= need;
+    if (ok) pass++;
+    const lvl = need === 7 ? 'AAA' : (need === 3 ? 'non-text' : 'AA');
+    const cls = ok ? (need === 7 ? 'aaa' : 'pass') : 'fail';
+    return '<tr><td><span class="dot" style="background:var(' + fg + ')"></span>'
+      + '<span class="dot" style="background:var(' + bg + ')"></span>'
+      + '<code>' + fg + '</code> / <code>' + bg + '</code></td>'
+      + '<td>' + use + '</td>'
+      + '<td class="num"><b>' + v.toFixed(2) + '</b></td>'
+      + '<td class="num">' + need + '</td>'
+      + '<td><span class="tag ' + cls + '">' + (ok ? '✓ ' + lvl : '✗ REPROVA') + '</span></td></tr>';
+  }).join('');
+  const all = PAIRS.length;
+  document.getElementById('scoreLine').textContent =
+    pass + '/' + all + ' pares passam' + (pass === all ? ' — zero falhas' : ' — ATENÇÃO');
+  document.getElementById('scoreLine').style.color =
+    pass === all ? 'var(--c-ok)' : 'var(--c-danger)';
+}
+
+/* --- referências: caminho relativo real + link real do sources.json --- */
+const REFS = [
+  ['pins/cyan-blue-grey-design-system/05--vitasphere-healthcare-dashboard-ui-dark-mode-pat--dribbble.jpg',
+   'https://dribbble.com/shots/27528244-VitaSphere-Healthcare-Dashboard-UI-Dark-Mode-Patient-Monitor',
+   'VitaSphere — Dashboard Dark Mode', ['🟡','♿ reprova'],
+   'A prova visual de que ciano sobre near-black funciona: navy quase preto, acento ciano, rail de ícones, glow suave. Validou a direção inteira. Reprova no metadado de 11–12px — corrigido para 13px em --c-text-3.'],
+  ['pins/sidebar-navigation-app-ui-dark/07--modern-sidebar-navigation-dark-ui-app-card-ui-de--dribbble.jpg',
+   'https://dribbble.com/shots/26584619-Modern-Sidebar-Navigation-Dark-UI',
+   'Modern Sidebar Navigation Dark UI', ['✅','♿ com correção'],
+   'Mostra o mesmo menu como rail e como painel, lado a lado — origem das Opções A e B. O rail original é só ícone, sem rótulo: inaceitável no §0. Nosso rail só existe com rótulo permanente.'],
+  ['pins/sidebar-navigation-app-ui-dark/04--sidebar-menu-account-switcher-app-shell-clean-da--dribbble.jpg',
+   'https://dribbble.com/shots/27161223-Sidebar-menu',
+   'Sidebar menu — app shell', ['✅','♿ 🟡 parcial'],
+   'O bloco utilitário grudado no rodapé. Adotado: tira Ajustes da disputa de atenção com as 3 seções de trabalho. Descartei os grupos rotulados — com 4 itens é subdivisão à toa.'],
+  ['pins/sidebar-navigation-app-ui-dark/01--ai-dashboard-sidebar-dark-light-web-app-ui-desig--dribbble.jpg',
+   'https://dribbble.com/shots/26648282-AI-Dashboard-Sidebar-Dark-Light-Web-App-UI-Design',
+   'AI Dashboard Sidebar — Dark/Light', ['🟡','♿ 🔴 reprova'],
+   'Origem da Opção C (chevron de colapso na aresta), recusada por custo/benefício. O painel é translúcido sobre wallpaper laranja com rótulos de ~10px: é literalmente o caso que o notes.md §5 proíbe.'],
+  ['pins/dark-dashboard-ui-glow-blue-accent/04--analytics-dashboard-with-ai-assistant-dark-ui-ad--dribbble.jpg',
+   'https://dribbble.com/shots/27439956-Analytics-Dashboard-with-AI-Assistant-Dark-UI',
+   'Analytics Dashboard with AI Assistant', ['✅','♿ ✅ passa'],
+   'Inversão como hierarquia: tudo grafite discreto e UM cartão claro sólido com números enormes. Destaca por luminância, não por glow nem vidro. Origem direta da “última fala em accent-soft sólido”.'],
+  ['pins/dark-dashboard-ui-glow-blue-accent/06--dark-mode-bento-grid-design-workflow-automation---dribbble.jpg',
+   'https://dribbble.com/shots/27476680-Dark-Mode-Bento-Grid-Design-Workflow-Automation-Feature-Section',
+   'Dark Mode Bento Grid', ['🟡','♿ 🔴 no corpo'],
+   'Glow contido DENTRO do cartão, servindo de assinatura sem invadir o texto — tratamento adotado no cartão de ornamento. O parágrafo de apoio em cinza médio reprova AA; nosso corpo usa --c-text-2.'],
+  ['pins/dark-dashboard-ui-glow-blue-accent/02--dark-theme-crypto-trading-bot-ui-neon-liquid-gla--dribbble.jpg',
+   'https://dribbble.com/shots/26140888-Dark-Theme-Crypto-Trading-Bot-UI-Neon-Liquid-Glass-Clay',
+   'Crypto Trading Bot — Neon Liquid Glass', ['🔴','♿ 🔴 reprova'],
+   'O parente mais próximo da referência do usuário e a lição negativa mais útil do lote: o mesmo rótulo tem contraste diferente dependendo de onde caiu no vidro. Adaptação viável: assinatura de vidro em UM cartão decorativo, aria-hidden, feito com gradiente + borda. Zero KB.'],
+  ['pins/glassmorphism-dashboard-cards-dark/02--dark-mode-dashboard-cards-activity-notifications--dribbble.jpg',
+   'https://dribbble.com/shots/26409524-Dark-Mode-Dashboard-Cards-Activity-Notifications',
+   'Dark Mode Dashboard Cards', ['✅','♿ 🟡 parcial'],
+   'Anatomia de linha reusada nas 3 telas de conteúdo: badge de ícone + título + descrição + timestamp + ⋮, com divisórias hairline em vez de cartão por item. Estado comunicado só por cor — corrigido para ícone + palavra.'],
+  ['../transcriber/pins/transcription-app-interface-clean/01--live-transcript-ai-assistant-app-ai-assistant-ai--dribbble.jpg',
+   'https://dribbble.com/shots/27580453-Live-Transcript-AI-Assistant-App',
+   'Live Transcript AI Assistant App', ['✅','♿ 🔴 reprova'],
+   'A mais próxima do nosso caso: bolhas alternadas, separador de data, stop sempre alcançável no header. Reprova exatamente onde não pode — bolhas cinza-claro sobre branco-acinzentado em ~14px. Nossa bolha é surface-3 sólido a 22px.'],
+  ['../transcriber/pins/transcription-app-interface-clean/05--voice-recording-transcription-app-design-audio-r--dribbble.jpg',
+   'https://dribbble.com/shots/27085875-Voice-Recording-Transcription-App-Design',
+   'Wavelogs — Voice Recording & Transcription', ['✅','♿ 🟡 parcial'],
+   'Três telas úteis: timer enorme + forma de onda viva; bloco LIVE TRANSCRIPTION separado do painel de gravação (resolveu nossa hierarquia); par Pause/Stop explícito. Também alimentou os grupos rotulados de Ajustes.'],
+  ['../transcriber/pins/high-contrast-accessible-app-large-type/04--empowering-health-care-mobile-app-chat-screen-ap--dribbble.jpg',
+   'https://dribbble.com/shots/26099457-Empowering-Health-Care-Mobile-App-Chat-Screen',
+   'Health Care — Chat Screen', ['✅','♿ ✅ passa'],
+   'O melhor contraste do lote: bolha escura sólida com texto branco de um lado, bolha clara sólida do outro. Sem gradiente, sem vidro, sem opacidade. É exatamente a mecânica que o transcript precisa.'],
+  ['../transcriber/pins/live-caption-ui/01--orex-premium-ai-live-translation-mobile-app-ui-a--dribbble.jpg',
+   'https://dribbble.com/shots/27384945--Orex-Premium-AI-Live-Translation-Mobile-App-UI',
+   'Orex — AI Live Translation', ['🟡','♿ 🔴 reprova'],
+   'O seletor de idioma em linha no topo resolveu um problema real: o idioma do áudio muda no meio da conversa e não pode exigir ida a Ajustes. Virou o chip de idioma no header. O resto é primeira dobra de marketing — descartado.'],
+  ['../transcriber/pins/live-caption-ui/02--cloome-smart-meeting-saas-dashboard-with-ai-inte--dribbble.jpg',
+   'https://dribbble.com/shots/26214421-Cloome-Smart-Meeting-SaaS-Dashboard-with-AI-Integration',
+   'Cloome — Smart Meeting Dashboard', ['✅','♿ 🟡 parcial'],
+   'Desktop com sidebar em tema claro: pílula tingida no item ativo (adotada, com accent-soft a 16,77:1) e painel em duas colunas — confirmou a proporção transcript dominante + coluna estreita de estado.'],
+  ['../transcriber/pins/transcription-app-interface-clean/06--lumenix-intelligent-voice-assistant-hub-behavior--dribbble.jpg',
+   'https://dribbble.com/shots/27551563-Lumenix-Intelligent-Voice-Assistant-Hub-Behavioral-Analytics',
+   'Lumenix — Voice Assistant Hub', ['🟡','♿ 🔴 reprova'],
+   'Barra de ações do resultado (forma de onda + velocidade + download), útil na transcrição de arquivo. O resto é dashboard analítico em ~10–11px sobre mockup em perspectiva. Inspiração parcial.'],
+  ['../transcriptions/pins/search-list-archive-ui-dark-app/02--ai-tool-mobile-app-all-conversations-screen-desi--dribbble.jpg',
+   'https://dribbble.com/shots/26815579-AI-Tool-Mobile-App-All-Conversations-Screen-Design',
+   'AI Tool — All Conversations', ['✅','♿ 🔴 reprova'],
+   'Busca logo abaixo do título (não escondida atrás de lupa) e lista agrupada por recência. Agrupar por tempo é o que faz “aquela conversa de terça” ser achável sem lembrar o nome. Texto original ~11–13px: corrigido.'],
+  ['../transcriptions/pins/notes-history-list-search-ui/03--notes-app-figma-ui-ux-vector-web--dribbble.jpg',
+   'https://dribbble.com/shots/25703316-Notes-App',
+   'Notes App', ['🟡','♿ 🔴 reprova'],
+   'A prévia do conteúdo dentro do cartão: numa transcrição, as duas primeiras linhas SÃO o título útil. Adotado como prévia de 2 linhas. Descartei a grade em favor de lista — mais itens por rolagem e melhor medida de leitura.'],
+  ['../library/pins/audio-files-list-ui-player/03--noise-reducer-app-audio-recorder-file-management--dribbble.jpg',
+   'https://dribbble.com/shots/27118975-Noise-Reducer-App-Audio-Recorder-File-Management-UI',
+   'Noise Reducer — Recorder & Files', ['✅','♿ 🟡 parcial'],
+   'A mais aproveitável da Biblioteca: título, busca, chips de filtro e linhas com ícone de tipo + nome + duração·tamanho + ⋯. Adotada quase inteira. O trio Cancelar/Pausar/Concluir COM rótulo sob cada ícone reforça o padrão do Transcritor.'],
+  ['../library/pins/audio-library-file-manager-ui-dark/01--file-manager-dashboard-ui-library-page-2021-desi--dribbble.jpg',
+   'https://dribbble.com/shots/15376733-File-Manager-Dashboard-UI-Library-Page',
+   'File Manager Dashboard — Library', ['🟡','♿ 🔴 reprova'],
+   'Rail + título + busca larga: confirmou a estrutura do shell. Reprova em dois pontos graves — rail sem rótulo nenhum, e legenda de cartão sobre miniatura (contraste depende da foto). Nome do arquivo ficou fora de qualquer miniatura.'],
+  ['../library/pins/audio-library-file-manager-ui-dark/05--in-app-media-player-ui-dark-mode-expanded-contro--dribbble.jpg',
+   'https://dribbble.com/shots/26891297-In-App-Media-Player-UI-Dark-Mode-Expanded-Controls',
+   'In-App Media Player — Expanded', ['🔴','♿ 🔴 reprova'],
+   'Retrato do que o §5 proíbe: título da faixa sobre vidro em cima de miniaturas coloridas rolando. Adaptação: nossa pré-escuta é barra SÓLIDA ancorada no rodapé, sem blur — o áudio aqui é conferência, não consumo.'],
+  ['../settings/pins/accessibility-settings-text-size-app-ui/05--accessible-news-profile-page-animation-app-brand--dribbble.jpg',
+   'https://dribbble.com/shots/26642316-Accessible-News-Profile-Page',
+   'Accessible News — Profile', ['✅','♿ ✅ passa'],
+   'A melhor da seção e a única que se propõe acessível de fato: linhas chapadas com rótulo à esquerda e valor à direita, sempre visível sem abrir nada. Adotada como anatomia da linha de ajuste. Só acrescentei rótulo textual de estado ao toggle.'],
+  ['../settings/pins/settings-screen-language-selector-ui/06--helloui-design-system-for-saas-enterprise-produc--dribbble.jpg',
+   'https://dribbble.com/shots/27046172-HelloUI-Design-System-for-SaaS-Enterprise-Products',
+   'HelloUI Design System', ['🔴','♿ 🔴 reprova'],
+   'Capa de kit de design, não tela de ajustes. Zero componente aproveitável: chips claros com texto roxo sobre roxo saturado ficam abaixo de AA, e a paleta monocromática não tem escala neutra para hierarquia. Registrada para não parecer descarte silencioso.']
+];
+
+document.getElementById('refGrid').innerHTML = REFS.map(function(r){
+  const src = r[0], url = r[1], title = r[2], tags = r[3], why = r[4];
+  const tagHtml = tags.map(function(t){
+    const cls = t.indexOf('✅') === 0 ? 'pass' : (t.indexOf('🔴') === 0 ? 'fail' :
+                (t.indexOf('reprova') > -1 ? 'fail' : (t.indexOf('passa') > -1 ? 'pass' : 'warn')));
+    return '<span class="tag ' + cls + '">' + t + '</span>';
+  }).join('');
+  return '<figure><img loading="lazy" src="' + src + '" alt="Referência: ' + title + '">'
+    + '<figcaption><b style="font-size:var(--t-sm);color:var(--c-text)">' + title + '</b>'
+    + '<div class="v">' + tagHtml + '</div>'
+    + '<div class="why">' + why + '</div>'
+    + '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>'
+    + '</figcaption></figure>';
+}).join('');
+
+/* --- toggle de tema --- */
+function render(){
+  const dark = document.documentElement.dataset.theme === 'dark';
+  const b = document.getElementById('themeBtn');
+  b.textContent = dark ? '☾ Tema escuro' : '☀ Tema claro';
+  b.setAttribute('aria-pressed', String(dark));
+  document.getElementById('themeName').textContent = dark ? 'escuro' : 'claro';
+  drawRamp(document.getElementById('rampCyan'), 'cyan', CYAN, '500');
+  drawRamp(document.getElementById('rampGrey'), 'grey', GREY, null);
+  drawProof();
+}
+document.getElementById('themeBtn').addEventListener('click', function(){
+  const el = document.documentElement;
+  el.dataset.theme = el.dataset.theme === 'dark' ? 'light' : 'dark';
+  render();
+});
+render();
+</script>
+</body>
+</html>

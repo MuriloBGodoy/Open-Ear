@@ -1,0 +1,10 @@
+# O projeto é editado no Windows e construído no Linux do Netlify. Sem isto, um
+# clone em outra máquina aparece com o repositório inteiro "modificado", e todo
+# diff vira ruído de fim de linha.
+* text=auto eol=lf
+
+# Binários: converter fim de linha aqui corrompe o arquivo.
+*.png binary
+*.jpg binary
+*.wav binary
+*.ico binary

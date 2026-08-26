@@ -1,0 +1,35 @@
+# dependências
+node_modules/
+frontend/node_modules/
+
+# build
+frontend/dist/
+frontend/dev-dist/
+frontend/.netlify/
+
+# backend .NET aposentado — as funções agora vivem em frontend/netlify/functions/.
+# A pasta segue no disco só como referência; os artefatos de build, não.
+backend/bin/
+backend/obj/
+backend/appsettings.Development.json
+
+# sessão de login do Pinterest — contém cookies pessoais, NUNCA commitar
+tools/.pinterest-session.json
+
+# saída do screenshot.mjs — regerável, e são ~3 MB de estados repetidos
+.screenshots/
+
+# as referências visuais são trabalho autoral de terceiros, baixado do Pinterest:
+# usar como estudo é uma coisa, redistribuir num repositório público é outra.
+# Os `sources.json` ficam, e é o que importa — cada análise nos READMEs aponta
+# para o link original, que continua alcançável.
+designs/**/pins/**/*.jpg
+
+# segredos
+.env
+.env.local
+
+# so
+.DS_Store
+Thumbs.db
+desktop.ini

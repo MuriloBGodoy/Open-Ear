@@ -1,0 +1,1463 @@
+@import './tokens.css';
+
+/**
+ * global.css — layout e componentes.
+ *
+ * Regra da casa: nenhuma cor, medida ou raio literal aqui. Tudo sai de
+ * tokens.css, que é onde a paleta e as razões de contraste são justificadas.
+ * Tokens novos entram com fallback — `var(--c-sidebar-bg, var(--c-surface))` —
+ * para o layout nunca depender de um token que ainda não existe.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Nunca travar o zoom: quem depende de texto grande precisa poder ampliar. */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-ui);
+  font-size: var(--t-md);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* Foco visível sempre. Nunca remova sem substituir. */
+:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Conteúdo só para leitor de tela. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================== casca ===== */
+
+.shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--sidebar-w, 17rem) minmax(0, 1fr);
+  grid-template-areas: 'sidebar main';
+}
+
+.shell__main {
+  grid-area: main;
+  min-width: 0;
+  padding: var(--s-6) var(--s-5) var(--s-7);
+}
+
+.shell__content {
+  width: 100%;
+  max-width: var(--content-max, 58rem);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+/* Empilhamento interno dos painéis (aba ao vivo / arquivo). */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.topbar {
+  display: none; /* só aparece no mobile, junto com a gaveta */
+  grid-area: topbar;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.shell__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgb(0 0 0 / 0.55);
+  backdrop-filter: blur(2px);
+}
+
+/* ============================================================ sidebar ===== */
+
+.sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  padding: var(--s-5) var(--s-4);
+  background: var(--c-sidebar-bg, var(--c-surface));
+  border-right: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.sidebar__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+}
+
+/**
+ * Especificidade dobrada de propósito: `.btn--icon` é declarado depois e também
+ * define `display`. Com uma classe só, ele ganharia no desempate por ordem e o
+ * botão de fechar apareceria no desktop, onde não existe gaveta para fechar.
+ */
+.sidebar .sidebar__close {
+  display: none;
+  margin-left: auto;
+}
+
+.sidebar__nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.sidebar__foot {
+  margin-top: auto;
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+  line-height: 1.45;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+}
+
+.brand__mark {
+  color: var(--c-accent);
+  flex-shrink: 0;
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand__name {
+  font-size: var(--t-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.brand__tagline {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+  white-space: nowrap;
+}
+
+/**
+ * Item de navegação. Rótulo em texto sempre, nunca só ícone: para quem tem Libras
+ * como primeira língua, ícone abstrato exige um salto de interpretação que uma
+ * palavra curta dispensa.
+ */
+.navitem {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--s-3);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--c-text-2);
+  font-size: var(--t-md);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.navitem:hover {
+  background: var(--c-surface-2);
+  color: var(--c-text);
+}
+
+.navitem[data-active='true'] {
+  background: var(--c-sidebar-item-active, var(--c-accent-soft));
+  color: var(--c-text);
+  border-color: var(--c-accent);
+}
+
+.navitem {
+  position: relative;
+}
+
+/* Barra à esquerda: o estado ativo não pode depender só de cor de fundo. */
+.navitem[data-active='true']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 1.5rem;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+}
+
+.navitem__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navitem__badge {
+  min-width: 1.5rem;
+  padding: 0 var(--s-1);
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  color: var(--c-text-2);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  text-align: center;
+}
+
+.navitem[data-active='true'] .navitem__badge {
+  background: var(--c-accent);
+  color: var(--c-accent-text);
+}
+
+/* ==================================================== cabeçalho da tela ===== */
+
+.screenhead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+.screenhead__title {
+  font-size: var(--t-2xl, var(--t-xl));
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.screenhead__subtitle {
+  color: var(--c-text-2);
+  font-size: var(--t-sm);
+  margin-top: 2px;
+}
+
+/* ============================================================ botões ===== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: var(--tap);
+  padding: 0 var(--s-4);
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  color: var(--c-text);
+  font-size: var(--t-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--c-border);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--c-accent);
+  color: var(--c-accent-text);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--c-accent-hover);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--c-border);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--c-surface-2);
+}
+
+.btn--icon {
+  min-width: var(--tap);
+  padding: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  border-color: var(--c-border);
+  flex-shrink: 0;
+}
+
+.btn--icon:hover:not(:disabled) {
+  background: var(--c-surface-2);
+}
+
+.btn--danger {
+  color: var(--c-danger);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: var(--c-danger-soft);
+  border-color: var(--c-danger);
+}
+
+.btn--danger-solid {
+  background: var(--c-danger);
+  color: #fff;
+}
+
+/* Botão principal de gravação: grande, porque é a ação que importa. */
+/**
+ * A ação principal do app, e por isso grande: alvo de 76px alcançável com uma mão
+ * só. O teto de 34rem existe porque em tela larga um botão de 850px deixa de ler
+ * como botão e passa a ler como faixa — sem parar de ser gigante no celular.
+ */
+.btn--record {
+  min-height: 76px;
+  width: 100%;
+  max-width: 34rem;
+  font-size: var(--t-lg);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-glow, none);
+}
+
+/**
+ * O :hover está no seletor de propósito. `.btn--primary:hover:not(:disabled)`
+ * tem especificidade 0,3,0 e vencia a regra de gravando — resultado: com o cursor
+ * (ou o dedo) sobre o botão, ele voltava para o ciano e o estado "estou gravando"
+ * ficava escondido exatamente na hora em que a pessoa está tocando nele.
+ */
+.btn--record[data-recording='true'],
+.btn--record[data-recording='true']:hover:not(:disabled) {
+  background: var(--c-live);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* No escuro o --c-live é rosa claro: o texto tem que escurecer, não clarear. */
+:root[data-theme='dark'] .btn--record[data-recording='true'],
+:root[data-theme='dark'] .btn--record[data-recording='true']:hover:not(:disabled) {
+  color: var(--c-accent-text);
+}
+
+/* ============================================================== abas ===== */
+
+.tabs {
+  display: flex;
+  gap: var(--s-1);
+  padding: var(--s-1);
+  background: var(--c-surface-2);
+  border-radius: var(--r-pill);
+  align-self: flex-start;
+}
+
+.tabs__tab {
+  min-width: 8rem;
+  min-height: 44px;
+  padding: 0 var(--s-4);
+  border: none;
+  border-radius: var(--r-pill);
+  background: transparent;
+  font-size: var(--t-md);
+  font-weight: 600;
+  color: var(--c-text-2);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+/**
+ * A aba ativa NÃO pode usar --c-surface: a trilha é --c-surface-2, e no tema
+ * escuro surface é mais escura que surface-2 — a aba selecionada viraria um
+ * baixo-relevo e leria como a menos ativa das duas. O par accent-soft + borda
+ * accent é o mesmo do item ativo da sidebar e funciona nos dois temas.
+ */
+.tabs__tab[aria-selected='true'] {
+  background: var(--c-sidebar-item-active, var(--c-accent-soft));
+  color: var(--c-text);
+  box-shadow: inset 0 0 0 1px var(--c-accent);
+}
+
+/* ============================================================= card ===== */
+
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+}
+
+.card__title {
+  font-size: var(--t-lg);
+  font-weight: 700;
+  margin-bottom: var(--s-3);
+}
+
+/* ==================================================== medidor de nível ===== */
+
+/**
+ * Feedback de áudio SEMPRE visual — o usuário não ouve. Este medidor é a prova
+ * de que o microfone está captando, e a única forma de perceber isso.
+ */
+.meter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-3) 0;
+}
+
+/**
+ * A TRILHA É OBRIGATÓRIA. Sem o fundo, doze barras no piso de 4px viram um
+ * tracejado solto no meio do painel — parecia um card que não carregou. Com a
+ * trilha desenhada, o medidor vazio continua legível como medidor: dá para ver
+ * que existe espaço para a barra subir, e o silêncio passa a ser informação em
+ * vez de defeito.
+ */
+.meter__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 3.25rem;
+  padding: 6px;
+  align-self: stretch;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+}
+
+/**
+ * Barra com largura mínima real, não só `flex: 1`. Com doze barras num painel de
+ * 300px cada uma fica na casta dos 18px — e é essa largura que faz o movimento
+ * ser visível de longe, que é o ponto de existir um medidor aqui.
+ *
+ * Altura em porcentagem, não em pixel: assim a geometria mora só no CSS e mudar
+ * a altura da trilha não exige mexer no componente para os dois valores
+ * continuarem batendo.
+ *
+ * A cor de repouso é --c-text-3 e não --c-border-strong: a barra apagada agora
+ * fica sobre a trilha (--c-surface-2), não sobre o painel, e nesse fundo mais
+ * claro a border-strong cai para 2.7:1 — abaixo do mínimo de 3:1 para objeto
+ * gráfico. O contrast.mjs reprovou o par antes de a tela mentir.
+ */
+.meter__bar {
+  flex: 1;
+  min-width: 6px;
+  min-height: 4px;
+  border-radius: 2px;
+  background: var(--c-text-3);
+  transition: height 90ms linear, background 90ms linear;
+}
+
+/**
+ * Aqui entra o Miami blue puro (--c-accent-ui), não o --c-accent: barra de
+ * medidor é objeto gráfico, exigência é 3:1 e não 4.5:1. É exatamente o lugar
+ * onde a cor da marca pode aparecer saturada sem mentir sobre contraste.
+ */
+.meter__bar[data-on='true'] {
+  background: var(--c-accent-ui, var(--c-accent));
+}
+
+.meter__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--c-border-strong);
+  flex-shrink: 0;
+}
+
+.dot[data-state='live'] {
+  background: var(--c-live);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.dot[data-state='speaking'] {
+  background: var(--c-ok);
+}
+
+/* Pausa não pulsa: o ponto parado é justamente a informação. */
+.dot[data-state='paused'] {
+  background: var(--c-text-3);
+}
+
+.meter__hint {
+  font-size: var(--t-xs);
+  color: var(--c-text-2);
+  line-height: 1.5;
+}
+
+/**
+ * O par motion-only / reduced-only troca a frase, não esconde informação: quem
+ * pediu menos animação lê por que as barras estão paradas, em vez de concluir que
+ * o microfone morreu.
+ */
+.reduced-only {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-only {
+    display: none;
+  }
+
+  .reduced-only {
+    display: inline;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ======================================================= transcrição ===== */
+
+/**
+ * O bloco de leitura. Tudo aqui é dimensionado para leitura em movimento:
+ * fonte grande, entrelinha folgada, largura de linha curta (~62ch), contraste AAA.
+ */
+.transcript {
+  font-size: var(--t-transcript);
+  line-height: var(--lh-transcript);
+  color: var(--c-text);
+  max-width: 62ch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-height: 8rem;
+}
+
+.transcript--inline,
+.transcript--sample {
+  min-height: 0;
+  margin-top: var(--s-3);
+}
+
+.transcript__line {
+  padding: var(--s-2) var(--s-3);
+  border-left: 4px solid var(--c-accent-soft);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: var(--c-surface);
+}
+
+.transcript__line[data-status='pending'] {
+  border-left-color: var(--c-border-strong);
+  color: var(--c-text-3);
+  font-style: italic;
+}
+
+.transcript__line[data-status='error'] {
+  border-left-color: var(--c-danger);
+  background: var(--c-danger-soft);
+  color: var(--c-text);
+  font-size: var(--t-md);
+}
+
+/* A última fala é a que importa numa conversa: barra saturada a marca. */
+.transcript__line:last-child {
+  border-left-color: var(--c-accent-ui, var(--c-accent));
+}
+
+.empty {
+  color: var(--c-text-2);
+  font-size: var(--t-md);
+  text-align: center;
+  padding: var(--s-6) var(--s-4);
+  line-height: 1.6;
+}
+
+.hint {
+  color: var(--c-text-2);
+  font-size: var(--t-sm);
+  margin-top: var(--s-2);
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px var(--s-2);
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  color: var(--c-text-2);
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
+.tag--ok {
+  background: var(--c-accent-soft);
+  color: var(--c-accent-ink, var(--c-text));
+}
+
+/* ==================================================== upload / arquivo ===== */
+
+.drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px dashed var(--c-border-strong);
+  border-radius: var(--r-lg);
+  padding: var(--s-6) var(--s-4);
+  text-align: center;
+  background: var(--c-surface);
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.drop[data-over='true'] {
+  border-color: var(--c-accent);
+  background: var(--c-accent-soft);
+}
+
+/* Vazio = a zona de soltar É o estado vazio, então ela ganha respiro de tela. */
+.drop[data-empty='true'] {
+  padding: var(--s-7) var(--s-4);
+}
+
+/**
+ * Com arquivos na lista ela passa a ser ação secundária: encolhe para uma linha
+ * só, senão um bloco tracejado de 200px rouba a atenção da própria biblioteca.
+ */
+.drop[data-empty='false'] {
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* Alinhado à esquerda: centralizado sobra uma calha vazia de um lado só. */
+  justify-content: flex-start;
+  align-items: center;
+  text-align: left;
+  gap: var(--s-3);
+  padding: var(--s-3);
+}
+
+.drop[data-empty='false'] .hint {
+  margin-top: 0;
+}
+
+.drop__icon {
+  color: var(--c-text-3);
+  margin-bottom: var(--s-3);
+}
+
+.drop__title {
+  font-size: var(--t-lg);
+  font-weight: 700;
+}
+
+/* Texto que explica POR QUE a tela existe: vem antes da ação, não depois. */
+.hint--lead {
+  max-width: 46ch;
+  margin-bottom: var(--s-4);
+}
+
+.progress {
+  height: 10px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  overflow: hidden;
+}
+
+.progress__fill {
+  height: 100%;
+  background: var(--c-accent-ui, var(--c-accent));
+  border-radius: var(--r-pill);
+  transition: width 240ms ease;
+}
+
+/* ========================================================== avisos ===== */
+
+.notice {
+  display: flex;
+  gap: var(--s-3);
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  font-size: var(--t-sm);
+  border: 1px solid transparent;
+}
+
+.notice--warn {
+  background: var(--c-warn-soft);
+  border-color: var(--c-warn);
+  color: var(--c-text);
+}
+
+.notice--error {
+  background: var(--c-danger-soft);
+  border-color: var(--c-danger);
+  color: var(--c-text);
+}
+
+/* ============================================================ listas ===== */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list__item {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  padding: var(--s-3);
+}
+
+.list__item[data-open='true'] {
+  border-color: var(--c-accent);
+}
+
+.list__row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.list__icon {
+  display: inline-flex;
+  color: var(--c-text-3);
+  flex-shrink: 0;
+}
+
+/* Grupo das ações de texto de um item. Existe para elas quebrarem de linha em
+   bloco, e não uma de cada vez deixando botão órfão. */
+.list__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--s-2);
+}
+
+.list__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--s-1) 0;
+}
+
+.list__body--static {
+  cursor: default;
+}
+
+/* Linha que abre: o texto vira coluna e a seta fica na borda, como afordância. */
+.list__body--expandable {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.list__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.list__chevron {
+  flex-shrink: 0;
+  color: var(--c-text-3);
+  transform: rotate(90deg);
+  transition: transform var(--transition), color var(--transition);
+}
+
+.list__item[data-open='true'] .list__chevron {
+  transform: rotate(-90deg);
+  color: var(--c-accent);
+}
+
+.list__body:hover .list__chevron {
+  color: var(--c-text);
+}
+
+.list__title {
+  font-size: var(--t-md);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/**
+ * Prévia da fala. Duas linhas: uma não dá contexto, três viram um bloco de
+ * leitura e competem com a transcrição aberta logo abaixo.
+ */
+.list__preview {
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--c-text-2);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* ============================================================= busca ===== */
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 var(--s-3);
+  min-height: var(--tap);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-pill);
+}
+
+.search:focus-within {
+  border-color: var(--c-accent);
+}
+
+.search__icon {
+  color: var(--c-text-3);
+  flex-shrink: 0;
+}
+
+.search__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: var(--t-md);
+}
+
+/* ======================================================== formulários ===== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding: var(--s-3) 0;
+  border-top: 1px solid var(--c-border);
+}
+
+.field:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.field--fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.field__label {
+  font-size: var(--t-md);
+  font-weight: 600;
+  padding: 0;
+}
+
+.field__hint {
+  font-size: var(--t-sm);
+  color: var(--c-text-2);
+  max-width: 52ch;
+}
+
+.select {
+  margin-top: var(--s-2);
+  min-height: var(--tap);
+  max-width: 24rem;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  font-size: var(--t-md);
+  cursor: pointer;
+}
+
+.chips {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-top: var(--s-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--s-4);
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--t-md);
+  font-weight: 600;
+  color: var(--c-text-2);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.chip[data-selected='true'] {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: var(--c-accent-text);
+}
+
+.chip:has(:focus-visible) {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+/**
+ * Escala de tamanho do texto: cinco alvos, um toque. Segmentado e não par de
+ * botões A− / A+ porque o stepper esconde onde a pessoa está e quantos passos
+ * faltam; aqui os cinco tamanhos estão na tela ao mesmo tempo.
+ */
+.seg {
+  display: flex;
+  margin-top: var(--s-2);
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  max-width: 26rem;
+}
+
+.seg__opt {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 0 var(--s-2);
+  font-size: var(--t-md);
+  font-weight: 700;
+  color: var(--c-text-2);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* Divisória entre segmentos: sem ela, cinco números viram um número comprido. */
+.seg__opt + .seg__opt {
+  border-left: 1px solid var(--c-border-strong);
+}
+
+.seg__opt[data-selected='true'] {
+  background: var(--c-accent);
+  color: var(--c-accent-text);
+}
+
+.seg__opt:has(:focus-visible) {
+  outline: 3px solid var(--c-focus);
+  outline-offset: -3px;
+}
+
+/**
+ * Anatomia da linha de ajuste: rótulo e explicação à esquerda, o valor à direita.
+ * O controle na mesma coluna em toda a tela deixa varrer os ajustes de cima a
+ * baixo lendo só o que está definido — em vez de caçar o campo dentro de cada bloco.
+ */
+.field--split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3) var(--s-5);
+}
+
+.field__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.field--split .select {
+  margin-top: 0;
+  min-width: 12rem;
+}
+
+/* ====================================== palco da legenda ao vivo ===== */
+
+/**
+ * Uma coluna por padrão, duas quando cabe. A leitura fica com a coluna grande e
+ * o controle com a estreita — nunca o contrário, e nunca o controle acima do
+ * texto: cada fala nova empurraria a leitura para baixo da dobra.
+ */
+.stage {
+  display: grid;
+  gap: var(--s-4);
+  align-items: start;
+}
+
+@media (min-width: 64rem) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr) 18.75rem;
+  }
+
+  /* Painel colado no topo: em conversa longa a leitura rola, o controle não. */
+  .stage__side {
+    position: sticky;
+    top: var(--s-4);
+  }
+}
+
+.stage__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+.panel {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+.panel__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  align-items: stretch;
+}
+
+/* Na coluna estreita o botão gigante ocupa a largura toda: o teto de 34rem é
+   para tela larga, onde ele leria como faixa e não como botão. */
+.panel__actions .btn--record {
+  max-width: none;
+}
+
+/**
+ * Estado de gravação em palavra, não só em cor: "Gravando" escrito resolve para
+ * quem não distingue vermelho de cinza, e resolve para quem só bateu o olho.
+ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 4px var(--s-3);
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  color: var(--c-text-2);
+  font-size: var(--t-sm);
+  font-weight: 700;
+}
+
+.badge[data-state='live'] {
+  background: var(--c-live-soft);
+  color: var(--c-live);
+}
+
+/**
+ * Monoespaçado com números de largura fixa. Sem isso o "1" é mais estreito que o
+ * "8" e o cronômetro tremeliqueia a cada segundo — movimento gratuito no canto
+ * do olho de quem está tentando ler a conversa.
+ */
+.clock {
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--t-lg);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+/**
+ * O halo luminoso da referência entra aqui, e só quando está gravando. A primeira
+ * versão era um cartão de vidro decorativo ao lado do painel; na tela ele lia como
+ * um cartão que falhou de carregar. Brilho sem informação é ruído — no estado
+ * ativo o mesmo brilho passa a significar "está captando agora".
+ */
+.panel[data-recording='true'] {
+  border-color: var(--c-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ===================================================== falas em bolha ===== */
+
+.bubbles {
+  gap: var(--s-3);
+}
+
+/**
+ * Cada segmento é uma fala com hora. Fundo opaco, sempre: o texto da transcrição
+ * é o conteúdo que precisa de 7:1 provado, e sobre fundo translúcido a razão
+ * passa a depender do que estiver passando atrás.
+ */
+.bubble {
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  padding: var(--s-3);
+}
+
+.bubble__text {
+  color: var(--c-text);
+}
+
+.bubble__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-top: var(--s-2);
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+.bubble[data-status='pending'] .bubble__text {
+  color: var(--c-text-3);
+  font-style: italic;
+}
+
+.bubble[data-status='error'] {
+  background: var(--c-danger-soft);
+  border-color: var(--c-danger);
+}
+
+.bubble[data-status='error'] .bubble__text {
+  font-size: var(--t-md);
+}
+
+/**
+ * A ÚLTIMA FALA MUDA DE COR, NUNCA DE TAMANHO. Aumentar a fonte da última bolha
+ * reflui tudo acima a cada segmento novo, e quem estava lendo perde o lugar na
+ * volta. Fundo saturado, borda de acento e o único glow da tela dão o mesmo
+ * destaque sem mover um pixel do que já estava escrito.
+ */
+.bubble[data-last='true'] {
+  background: var(--c-accent-soft);
+  border-color: var(--c-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ================================== abas + idioma do áudio ===== */
+
+.tabsrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+/**
+ * <select> nativo vestido de chip. Nativo porque o seletor do sistema no celular
+ * é melhor do que qualquer dropdown escrito à mão, e já vem com teclado, leitor
+ * de tela e busca por digitação funcionando.
+ */
+.chipselect {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--tap);
+  padding: 0 var(--s-3);
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: var(--c-text-2);
+}
+
+.chipselect__input {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--c-text);
+  cursor: pointer;
+  max-width: 11rem;
+}
+
+.chipselect:has(:focus-visible) {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+/* =========================================== grupos e contagem ===== */
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+/**
+ * "Hoje", "Ontem", "Últimos 7 dias": é assim que a pessoa lembra da conversa que
+ * está procurando. Data exata exige que ela lembre a data, e ninguém lembra.
+ */
+.group__head {
+  font-size: var(--t-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-text-2);
+  padding: var(--s-2) 0 0;
+}
+
+/**
+ * O resultado da busca precisa ser lido, não deduzido do tamanho da lista — quem
+ * não ouve não tem o "achou" sonoro. Vive num aria-live no TSX.
+ */
+.resultcount {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--c-text-2);
+}
+
+/* ============================================================== utils ===== */
+
+.row {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.row--between {
+  justify-content: space-between;
+}
+
+/* ========================================================= responsivo ===== */
+
+/**
+ * Abaixo de 60rem a sidebar vira gaveta. O breakpoint não é o do celular: é onde
+ * 17rem de navegação começam a comer a largura do bloco de leitura — e o bloco de
+ * leitura é o produto.
+ */
+@media (max-width: 60rem) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'topbar'
+      'main';
+  }
+
+  .topbar {
+    display: flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    z-index: 40;
+    top: 0;
+    left: 0;
+    width: min(19rem, 84vw);
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+    box-shadow: var(--shadow-md, var(--shadow-sm));
+  }
+
+  .sidebar[data-open='true'] {
+    transform: translateX(0);
+  }
+
+  .sidebar .sidebar__close {
+    display: inline-flex;
+  }
+
+  .shell__main {
+    padding: var(--s-4) var(--s-3) var(--s-6);
+  }
+
+  .tabs__tab {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .tabs {
+    align-self: stretch;
+  }
+}
+
+/**
+ * Sem as duas colunas, o controle sobe para o topo. A ordem visual inverte a do
+ * DOM de propósito: quem abre o app precisa achar "começar a legendar" primeiro,
+ * e num bloco só de leitura vazio o botão estaria abaixo da dobra.
+ */
+@media (max-width: 63.9375rem) {
+  .stage__side {
+    order: -1;
+  }
+
+  /* Empilhado, gravar + pausar somam ~140px de altura antes do texto começar. */
+  .panel__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .panel__actions .btn--record {
+    flex: 1 1 14rem;
+  }
+}
+
+/* Rótulo e controle lado a lado só quando sobra largura para os dois. */
+@media (max-width: 48rem) {
+  .field--split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .field--split .select {
+    max-width: none;
+  }
+}
+
+@media (max-width: 30rem) {
+  /**
+   * Sem espaço para título + ações na mesma linha, o texto ocupa a largura toda e
+   * os botões caem para baixo. Ancorados à direita eles ficam sob a seta, em vez
+   * de abrir uma segunda coluna de ações no meio do cartão.
+   */
+  .list__row {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    row-gap: var(--s-2);
+  }
+
+  .list__body {
+    flex-basis: 100%;
+  }
+
+  /**
+   * Item com grupo de ações é outro caso: aí o corpo divide a primeira linha com
+   * o botão de apagar e as ações de texto tomam a linha de baixo inteira. Sem
+   * isso o apagar caía numa terceira linha sozinho.
+   *
+   * `0` e não `auto`: a quebra de linha do flex é decidida pelo tamanho-base do
+   * item, antes de encolher. Com base `auto` o nome longo do arquivo já media mais
+   * que a linha e o botão de apagar era empurrado para baixo de novo.
+   */
+  .list__row:has(.list__actions) .list__body {
+    flex-basis: 0;
+  }
+
+  /**
+   * `order` e não reordenação no JSX. O grupo de ações vem antes do apagar no
+   * DOM; como ele mede 100%, fechava a linha e jogava o apagar para uma terceira.
+   * Mandando o grupo para o fim da ordem visual, o apagar sobe e divide a primeira
+   * linha com o nome do arquivo — e a ordem de tabulação continua entregando as
+   * ações de texto antes da ação destrutiva, que é o que importa para quem navega
+   * por teclado.
+   */
+  .list__actions {
+    flex-basis: 100%;
+    order: 1;
+  }
+
+  /* Esticados, os dois botões preenchem a linha em vez de deixarem um vão à
+     esquerda — e o alvo de toque cresce de graça. */
+  .list__actions .btn {
+    flex: 1 1 auto;
+  }
+
+  /* Com o corpo em 100% o ícone sobrava sozinho numa linha só dele. É decorativo
+     (aria-hidden) e o nome do arquivo já diz o que é: fora da tela pequena. */
+  .list__icon {
+    display: none;
+  }
+
+  .screenhead__subtitle {
+    font-size: var(--t-xs);
+  }
+}

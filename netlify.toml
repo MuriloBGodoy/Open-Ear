@@ -1,0 +1,24 @@
+# Deploy do Open Ear.
+#
+# O site vive em `frontend/`, então `base` aponta para lá e todo caminho abaixo
+# é relativo a ele — `publish = "dist/"` significa `frontend/dist/`.
+#
+# A GROQ_API_KEY NÃO entra aqui: este arquivo é versionado. Ela vive nas
+# Environment Variables do site, no painel do Netlify.
+
+[build]
+  base = "frontend/"
+  command = "npm run build"
+  publish = "dist/"
+
+[build.environment]
+  # Fixado porque as funções usam globais que só existem do Node 20 em diante
+  # (File, AbortSignal.timeout). Deixar no padrão do Netlify é apostar que ele
+  # não vai regredir.
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions/"
+
+# As rotas (/api/transcribe, /api/health) são declaradas dentro de cada função,
+# via `export const config = { path }`. Não há redirect a manter em sincronia.

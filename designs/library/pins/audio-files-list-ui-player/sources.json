@@ -1,0 +1,50 @@
+{
+  "query": "audio files list ui player",
+  "source": "dribbble",
+  "collectedAt": null,
+  "collected": 6,
+  "references": [
+    {
+      "file": "01--music-app-ui-ux-design-app-interface-mobile-app---dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27168973-Music-App-UI-UX-Design",
+      "imageUrl": "https://cdn.dribbble.com/userupload/47013994/file/6c1f2474c0f5df4d26de5d01906926da.png?crop=0x0-4055x3041&format=webp&resize=1200x900&vertical=center",
+      "title": "Music App UI/UX Design app interface mobile app design music app product design ui design ux design",
+      "site": "dribbble"
+    },
+    {
+      "file": "02--murder-mystery-gaming-redesign-app-or-web-gaming--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27053833-Murder-Mystery-Gaming-Redesign",
+      "imageUrl": "https://cdn.dribbble.com/userupload/46624833/file/ba9f0275c9323483e160509dfb982933.png?crop=69x0-4414x3259&format=webp&resize=1200x900&vertical=center",
+      "title": "Murder Mystery Gaming Redesign app or web gaming website murder gaming uiux murder gaming web murder mystery gaming murder ui musemind myste",
+      "site": "dribbble"
+    },
+    {
+      "file": "03--noise-reducer-app-audio-recorder-file-management--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27118975-Noise-Reducer-App-Audio-Recorder-File-Management-UI",
+      "imageUrl": "https://cdn.dribbble.com/userupload/46847065/file/d4202a130d9014d195db9800e7a75b3d.jpg?format=webp&resize=1200x900&vertical=center",
+      "title": "Noise Reducer App – Audio Recorder & File Management UI audio editing mobile app audio file list screen audio recorder app dark mode mobile ",
+      "site": "dribbble"
+    },
+    {
+      "file": "04--lumenix-intelligent-voice-assistant-hub-behavior--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27551563-Lumenix-Intelligent-Voice-Assistant-Hub-Behavioral-Analytics",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48359071/file/06e87204a518e0bc5ca2129ba8f2b7e5.png?format=webp&resize=1200x900&vertical=center",
+      "title": "Lumenix — Intelligent Voice Assistant Hub & Behavioral Analytics ai workspace audio player ui behavioral tracker bento grid ui clean typogra",
+      "site": "dribbble"
+    },
+    {
+      "file": "05--sonixa-music-player-platform-album-app-audio-aud--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/25378779-Sonixa-Music-player-platform",
+      "imageUrl": "https://cdn.dribbble.com/userupload/18142185/file/original-5d4d8b2fabfffc6488d0f8fc687dfdde.png?crop=0x0-2400x1800&format=webp&resize=1200x900&vertical=center",
+      "title": "Sonixa - Music player platform album app audio audio player dashboard media player minimalist modern app music music app music dashboard mus",
+      "site": "dribbble"
+    },
+    {
+      "file": "06--audio-book-mobile-app-dark-mode-ui-app-audio-boo--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/26021040--Audio-Book-Mobile-App-Dark-Mode-UI",
+      "imageUrl": "https://cdn.dribbble.com/userupload/43303218/file/original-fed43cd8f6c4b43ef8d40ee318416b55.png?format=webp&resize=1200x900&vertical=center",
+      "title": "🎧 Audio Book Mobile App – Dark Mode UI app audio book audiobooks book reading books app clean ui dark mode ebook education ios design libra",
+      "site": "dribbble"
+    }
+  ]
+}

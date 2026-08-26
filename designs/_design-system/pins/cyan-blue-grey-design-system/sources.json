@@ -1,0 +1,50 @@
+{
+  "query": "cyan blue grey design system",
+  "source": "dribbble",
+  "collectedAt": null,
+  "collected": 6,
+  "references": [
+    {
+      "file": "01--negative-space-s-logo-letter-s-in-curved-hexagon--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27639596-Negative-Space-S-Logo-Letter-S-in-Curved-Hexagon",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48683292/file/310dd5176757ad3cd64e6ffe9d4d9339.png?format=webp&resize=1200x900&vertical=center",
+      "title": "Negative Space S Logo — Letter S in Curved Hexagon blue logo brand identity consulting logo curved hexagon logo fintech logo gradient logo h",
+      "site": "dribbble"
+    },
+    {
+      "file": "02--liquid-finance-fintech-app-redesign-appredesign---dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27661853-Liquid-Finance-Fintech-App-Redesign",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48765844/file/062364a7c0a1c0c318cdb13ce68ef9c2.jpg?format=webp&resize=1200x900&vertical=center",
+      "title": "Liquid Finance — Fintech App Redesign appredesign bankingapp darkmodeui designsystem digitalwallet financeapp fintechdesign fintechux ios26d",
+      "site": "dribbble"
+    },
+    {
+      "file": "03--vior-social-media-management-dashboard-brand-ide--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27408345-Vior-Social-Media-Management-Dashboard-Brand-Identity",
+      "imageUrl": "https://cdn.dribbble.com/userupload/47842837/file/ec9fc4308592f65e310c5c347e76795d.png?format=webp&resize=1200x900&vertical=center",
+      "title": "Vior - Social Media Management Dashboard Brand Identity brand design brand identity brand in use brand manual clean color palette design sys",
+      "site": "dribbble"
+    },
+    {
+      "file": "04--helios-climate-tech-landing-page-ui-green-energy--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27504312-Helios-Climate-tech-landing-page-UI-Green-energy-Aviation",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48183058/file/99a1255339769eaf689239dfec995d49.jpg?format=webp&resize=1200x900&vertical=center",
+      "title": "Helios - Climate tech landing page UI | Green energy | Aviation aviation design brand identity climate tech dark mode eco design environment",
+      "site": "dribbble"
+    },
+    {
+      "file": "05--vitasphere-healthcare-dashboard-ui-dark-mode-pat--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27528244-VitaSphere-Healthcare-Dashboard-UI-Dark-Mode-Patient-Monitor",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48272607/file/122070d45479b6257c12329989851efe.png?format=webp&resize=1200x900&vertical=center",
+      "title": "VitaSphere - Healthcare Dashboard UI, Dark Mode, Patient Monitor 3d imaging admin panel ai analytics dark mode dashboard ui data visualizati",
+      "site": "dribbble"
+    },
+    {
+      "file": "06--the-editorial-aquatic-fresh-clothes-app-3d-anima--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27332577-The-Editorial-Aquatic-Fresh-Clothes-App",
+      "imageUrl": "https://cdn.dribbble.com/userupload/47573329/file/8a1c3ef6a73902e24f1f0d5b5efd6cad.png?format=webp&resize=1200x900&vertical=center",
+      "title": "The Editorial Aquatic / Fresh Clothes App 3d animation app branding cleaningservice design graphic design illustration illustration laundrya",
+      "site": "dribbble"
+    }
+  ]
+}

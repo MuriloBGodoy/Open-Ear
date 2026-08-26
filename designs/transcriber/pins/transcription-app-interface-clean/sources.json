@@ -1,0 +1,57 @@
+{
+  "query": "transcription app interface clean",
+  "source": "dribbble",
+  "collectedAt": null,
+  "collected": 7,
+  "references": [
+    {
+      "file": "01--live-transcript-ai-assistant-app-ai-assistant-ai--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27580453-Live-Transcript-AI-Assistant-App",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48462931/file/8626821dc8eca69a82a2cb01c886ac74.png?format=webp&resize=1200x900&vertical=center",
+      "title": "Live Transcript & AI Assistant App ai assistant ai voice recognition app app application artificial intelligence collaboration edutech figma",
+      "site": "dribbble"
+    },
+    {
+      "file": "02--ai-voice-notes-app-ui-transcription-smart-rewrit--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27551488-AI-Voice-Notes-App-UI-Transcription-Smart-Rewrite",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48358788/file/bee95e5a968fb8842b19b074f264f92f.png?format=webp&resize=1200x900&vertical=center",
+      "title": "AI Voice Notes App UI – Transcription & Smart Rewrite ✨ ai ai assistant ai rewrite ai voice assistant ui kit ai voice notes app ui app desig",
+      "site": "dribbble"
+    },
+    {
+      "file": "03--ai-notetaker-mobile-app-ai-assistant-ai-interfac--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27178087-AI-Notetaker-Mobile-App",
+      "imageUrl": "https://cdn.dribbble.com/userupload/47043737/file/961b4e29486615cad3f8b50c2bdd060d.jpg?format=webp&resize=1200x900&vertical=center",
+      "title": "AI Notetaker Mobile App ai assistant ai interface ai notetaker ai productivity ai workflow app design design digital notes meeting notes mob",
+      "site": "dribbble"
+    },
+    {
+      "file": "04--ui-ux-for-an-ai-powered-handwriting-transcriptio--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27434872-UI-UX-for-an-AI-powered-handwriting-transcription-app",
+      "imageUrl": "https://cdn.dribbble.com/userupload/47936117/file/79a5d354b68f1baabbad261a6884cd0a.png?crop=298x219-1317x983&format=webp&resize=1200x900&vertical=center",
+      "title": "UI/UX for an AI-powered handwriting transcription app 3d ai app app concept app design concept design graphic design ios mobile mobile ux ui",
+      "site": "dribbble"
+    },
+    {
+      "file": "05--voice-recording-transcription-app-design-audio-r--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27085875-Voice-Recording-Transcription-App-Design",
+      "imageUrl": "https://cdn.dribbble.com/userupload/46733860/file/3ad4912b0e07b8f63dc8d2643d80cad0.png?format=webp&resize=1200x900&vertical=center",
+      "title": "Voice Recording & Transcription App Design audio recording audio to text converter clean ui ios app designer live voice transcription minima",
+      "site": "dribbble"
+    },
+    {
+      "file": "06--lumenix-intelligent-voice-assistant-hub-behavior--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27551563-Lumenix-Intelligent-Voice-Assistant-Hub-Behavioral-Analytics",
+      "imageUrl": "https://cdn.dribbble.com/userupload/48359071/file/06e87204a518e0bc5ca2129ba8f2b7e5.png?format=webp&resize=1200x900&vertical=center",
+      "title": "Lumenix — Intelligent Voice Assistant Hub & Behavioral Analytics ai workspace audio player ui behavioral tracker bento grid ui clean typogra",
+      "site": "dribbble"
+    },
+    {
+      "file": "07--ai-notes-transcription-productivity-mobile-app-d--dribbble.jpg",
+      "sourceUrl": "https://dribbble.com/shots/27341210-AI-Notes-Transcription-Productivity-Mobile-App-Design",
+      "imageUrl": "https://cdn.dribbble.com/userupload/47604941/file/047209460910b2ec395b51c2bd013e01.png?format=webp&resize=1200x900&vertical=center",
+      "title": "AI Notes, Transcription & Productivity Mobile App Design 3d ai app ai assistant app app redesign design glassmorphism note taking app notes ",
+      "site": "dribbble"
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+/**
+ * tokens.css — Open Ear · Turning sound into sight
+ * ÚNICA fonte de cor, espaçamento, tipografia, raio e sombra.
+ * Nenhum hex deve nascer fora deste arquivo.
+ *
+ * =============================================================================
+ * A REGRA QUE GOVERNA ESTE ARQUIVO
+ * =============================================================================
+ * O app legenda conversa para pessoas com deficiência auditiva. O texto não é
+ * apoio a um áudio: é o ÚNICO canal. Então:
+ *
+ *   - texto de transcrição ....... AAA, 7:1  (sem exceção)
+ *   - todo o resto do texto ...... AA,  4:5:1
+ *   - foco, borda de controle,
+ *     medidor de nível, gráfico .. 3:1 (WCAG 1.4.11 non-text)
+ *
+ * Cada par abaixo está anotado com a razão CALCULADA, não estimada.
+ * A régua está em `designs/_design-system/contrast.mjs` — 84/84 pares passam.
+ * Mexeu num valor? Rode `node designs/_design-system/contrast.mjs` antes de commitar.
+ *
+ * =============================================================================
+ * A PALETA: cinza frio + Miami blue
+ * =============================================================================
+ * Miami blue puro (#00B0DC) dá 2.55:1 sobre branco. Isso reprova AA (4.5) e
+ * reprova até o AA de texto grande (3.0). Ele é linda cor de acento e péssima
+ * cor de texto sobre claro. A solução não é "usar com cuidado", é uma RAMPA:
+ *
+ *   - tema CLARO: o ciano desce para cyan-700 (#00728F, 5.52:1) quando for
+ *     texto ou ação, e para cyan-600 (#0090B6, 3.71:1) quando for non-text.
+ *     O cyan-500 puro só aparece em preenchimento decorativo/gradiente.
+ *   - tema ESCURO: o ciano finalmente brilha à vontade. cyan-400 sobre a
+ *     superfície escura dá 7.31:1 — passa AAA. É aqui que a marca vive.
+ *
+ * Os cinzas são FRIOS (hue ~218), não neutros: cinza neutro ao lado de ciano
+ * puxa para um bege sujo por contraste simultâneo. O frio casa e faz o ciano
+ * parecer mais saturado sem gastar contraste.
+ *
+ * O tema escuro é o protagonista. O claro existe para uso em rua ensolarada e
+ * é igualmente validado — nenhum par foi deixado passando raspando.
+ */
+
+:root {
+  /* ===========================================================================
+   * RAMPAS BRUTAS — não use direto em componente. Use os tokens semânticos.
+   * Ficam expostas porque gráfico e medidor de nível precisam de passo exato.
+   * ========================================================================= */
+
+  /* Miami blue. Âncora de marca em 500. */
+  --cyan-50: #e8faff;
+  --cyan-100: #c7f1fc;
+  --cyan-200: #96e5f9;
+  --cyan-300: #55d2f1;
+  --cyan-400: #18bce4;
+  --cyan-500: #00b0dc; /* Miami blue */
+  --cyan-600: #0090b6;
+  --cyan-700: #00728f;
+  --cyan-800: #0a5a70;
+  --cyan-900: #0e4353;
+  --cyan-950: #082b36;
+
+  /* Cinza frio, hue ~218. */
+  --grey-0: #ffffff;
+  --grey-25: #f7f9fc;
+  --grey-50: #f1f4f9;
+  --grey-100: #e6ebf2;
+  --grey-200: #d4dbe5;
+  --grey-300: #b5bfcd;
+  --grey-400: #838ea0;
+  --grey-500: #697585;
+  --grey-600: #4f5a69;
+  --grey-700: #39424f;
+  --grey-800: #242c37;
+  --grey-900: #151b23;
+  --grey-950: #0c1118;
+  --grey-1000: #05080d;
+
+  /* ===========================================================================
+   * TEMA CLARO — superfícies
+   * ========================================================================= */
+  --c-bg: #f1f4f9; /* página */
+  --c-surface: #ffffff; /* cartão, painel, transcript */
+  --c-surface-2: #e6ebf2; /* bloco embutido, trilha de medidor */
+  --c-surface-3: #d4dbe5; /* bolha de fala do interlocutor */
+
+  --c-border: #c4cedc; /* 1.59:1 vs surface, 1.44:1 vs bg → aresta visível */
+  --c-border-strong: #838ea0; /* 3.31:1 vs surface → passa non-text 3:1 */
+
+  /* ---------- TEMA CLARO — texto ---------- */
+  --c-text: #101720; /* 18.02:1 sobre surface · 16.34 sobre bg → AAA (transcript) */
+  --c-text-2: #3d4653; /*  9.55:1 sobre surface ·  8.66 sobre bg → AAA */
+  --c-text-3: #5a6472; /*  6.00:1 sobre surface ·  5.44 sobre bg → AA (só metadado) */
+
+  /* ---------- TEMA CLARO — marca ---------- */
+  --c-accent: #00728f; /* cyan-700 · 5.52:1 sobre surface → AA como texto/link */
+  --c-accent-hover: #0a5a70; /* cyan-800 · 7.75:1 → AAA */
+  --c-accent-text: #ffffff; /*   sobre --c-accent = 5.52:1 → AA */
+  --c-accent-soft: #e8faff; /* cyan-50 · fundo de badge e item ativo */
+  --c-accent-ink: #0e4353; /* cyan-900 · 10.04:1 sobre accent-soft → AAA */
+  /**
+   * --c-accent-ui é o Miami blue onde ele é HONESTO no tema claro: objeto
+   * gráfico, não texto. Medidor de nível, barra de progresso, borda ativa.
+   * 3.71:1 sobre surface e 3.09:1 sobre surface-2 → passa non-text.
+   * Nunca ponha texto em cima disso no tema claro.
+   */
+  --c-accent-ui: #0090b6; /* cyan-600 */
+
+  --c-focus: #00728f; /* 5.52:1 vs surface, 5.01 vs bg → passa non-text folgado */
+
+  /* ---------- TEMA CLARO — navegação lateral ---------- */
+  --c-sidebar-bg: #f7f9fc; /* 1.05 vs bg: distingue sem virar segunda página */
+  --c-sidebar-item-active: #e8faff; /* text sobre ele = 16.77:1 → AAA */
+
+  /* ---------- TEMA CLARO — estados ---------- */
+  /* Cor nunca é o único sinal: todo estado leva ícone + rótulo junto. */
+  --c-live: #b3183f; /* gravando · 6.73:1 sobre surface → AA */
+  --c-live-soft: #fdebf0; /* live sobre ele = 5.87:1 → AA */
+  --c-ok: #0a6a4a; /* 6.62:1 → AA */
+  --c-ok-soft: #e4f5ee; /* ok sobre ele = 5.86:1 → AA */
+  --c-warn: #7e4e00; /* 7.05:1 → AAA */
+  --c-warn-soft: #fdf2de; /* warn sobre ele = 6.36:1 → AA */
+  --c-danger: #af2318; /* 6.83:1 → AA */
+  --c-danger-soft: #fdecea; /* danger sobre ele = 5.97:1 → AA */
+
+  /* ---------- TEMA CLARO — glow e vidro ---------- */
+  /**
+   * O glow da referência é ORNAMENTO. No tema claro ele é quase invisível de
+   * propósito: sobre fundo claro um brilho ciano só suja o contraste.
+   * --c-glass-* existe para cartão DECORATIVO (métrica, ornamento). É PROIBIDO
+   * usar atrás de texto de transcrição: translucidez + blur tornam a razão de
+   * contraste dependente do que passa por trás, ou seja, imprevisível.
+   */
+  --c-glow: rgb(0 176 220 / 0.1);
+  --c-glass-bg: rgb(255 255 255 / 0.72);
+  --c-glass-border: rgb(0 114 143 / 0.18);
+
+  /* ===========================================================================
+   * ESPAÇAMENTO — escala 4px. Densidade folgada: a pessoa lê em movimento.
+   * ========================================================================= */
+  --s-1: 0.25rem; /*  4px */
+  --s-2: 0.5rem; /*   8px */
+  --s-3: 0.75rem; /* 12px */
+  --s-4: 1rem; /*    16px */
+  --s-5: 1.5rem; /*  24px */
+  --s-6: 2rem; /*    32px */
+  --s-7: 3rem; /*    48px */
+  --s-8: 4rem; /*    64px — respiro de seção e área de ornamento */
+
+  /* ===========================================================================
+   * TIPOGRAFIA
+   * ========================================================================= */
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --t-xs: 0.8125rem; /* 13px — só metadado (duração, tamanho). NUNCA conteúdo. */
+  --t-sm: 0.9375rem; /* 15px — rótulo de controle */
+  --t-md: 1.0625rem; /* 17px — corpo da UI */
+  --t-lg: 1.25rem; /*   20px — título de cartão */
+  --t-xl: 1.625rem; /*  26px — título de seção */
+  --t-2xl: 2.125rem; /* 34px — título de tela */
+  --t-3xl: 3rem; /*      48px — display. Pode brincar com gradiente; corpo não. */
+
+  --lh-ui: 1.45;
+
+  /**
+   * Tamanho do texto de transcrição. É o único token que o usuário controla em
+   * runtime (Ajustes → Tamanho do texto), porque leitura é a função principal.
+   * Piso de 18px por decisão de a11y — não baixe daqui.
+   * A entrelinha é generosa (1.65) porque a pessoa alterna o olhar entre a tela
+   * e o rosto do interlocutor: linha larga demais faz perder o lugar na volta.
+   */
+  --t-transcript: 1.375rem; /* 22px */
+  --lh-transcript: 1.65;
+
+  /* ===========================================================================
+   * FORMA — raio generoso vem da referência; é o que ela dá de graça.
+   * ========================================================================= */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgb(11 20 33 / 0.06), 0 1px 3px rgb(11 20 33 / 0.08);
+  --shadow-md: 0 6px 20px rgb(11 20 33 / 0.1), 0 1px 3px rgb(11 20 33 / 0.06);
+  /**
+   * --shadow-glow é o brilho ciano da referência, domado. Só em elemento
+   * INTERATIVO em foco/ativo (botão primário, item ativo da sidebar, anel do
+   * medidor). Nunca atrás de texto, nunca como decoração permanente de tela.
+   */
+  --shadow-glow: 0 0 0 1px rgb(0 176 220 / 0.35), 0 4px 24px rgb(0 176 220 / 0.18);
+
+  /* ===========================================================================
+   * LAYOUT
+   * ========================================================================= */
+  --sidebar-w: 248px; /* ícone + rótulo: 24px ícone + 12 gap + rótulo + folga */
+  --sidebar-w-rail: 76px; /* só ícone: alvo de 48px centrado + 14 de cada lado */
+  --header-h: 64px;
+  --content-max: 920px; /* medida de leitura do transcript: ~70ch em 22px */
+
+  /* Alvo de toque: WCAG 2.2 SC 2.5.8 pede 24px; aqui 48px por decisão de a11y. */
+  --tap: 48px;
+
+  --transition: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =============================================================================
+ * TEMA ESCURO — o protagonista.
+ * Fundo quase preto azulado (vem da referência) para o ciano render sem
+ * reprovar em contraste. Aqui o Miami blue puro finalmente é utilizável.
+ * ========================================================================== */
+:root[data-theme='dark'] {
+  --c-bg: #05080d; /* near-black azulado */
+  --c-surface: #16202d; /* 1.22 vs bg → cartão se separa da página */
+  --c-surface-2: #243141; /* 1.24 vs surface */
+  --c-surface-3: #303f53; /* 1.23 vs surface-2 · bolha de fala */
+
+  --c-border: #2f3d50; /* 1.49:1 vs surface → aresta luminosa da referência */
+  --c-border-strong: #637286; /* 3.35:1 vs surface → passa non-text 3:1 */
+
+  --c-text: #f2f6fb; /* 15.13:1 sobre surface · 18.48 sobre bg → AAA */
+  --c-text-2: #c4cedb; /* 10.32:1 sobre surface → AAA */
+  --c-text-3: #98a4b4; /*  6.49:1 sobre surface → AA (só metadado) */
+
+  --c-accent: #18bce4; /* cyan-400 · 7.31:1 sobre surface → AAA. A marca mora aqui. */
+  --c-accent-hover: #55d2f1; /* cyan-300 · 9.29:1 → AAA */
+  --c-accent-text: #04222b; /*   sobre --c-accent = 7.37:1 → AAA */
+  --c-accent-soft: #0b2e3b; /* text sobre ele = 13.18:1 → AAA */
+  --c-accent-ink: #96e5f9; /* cyan-200 · 10.13:1 sobre accent-soft → AAA */
+  --c-accent-ui: #00b0dc; /* Miami blue PURO · 6.45:1 vs surface → aqui ele pode */
+
+  --c-focus: #18bce4; /* 7.31:1 vs surface, 8.93 vs bg */
+
+  --c-sidebar-bg: #0e1520; /* 1.10 vs bg → sidebar assenta, não flutua */
+  --c-sidebar-item-active: #0b2e3b; /* text = 13.18:1 · accent = 6.37:1 */
+
+  --c-live: #ff9db4; /* 8.39:1 sobre surface → AAA */
+  --c-live-soft: #3a1620; /* live sobre ele = 8.16:1 */
+  --c-ok: #5fd3a3; /* 8.86:1 */
+  --c-ok-soft: #0c2a21; /* ok sobre ele = 8.28:1 */
+  --c-warn: #e8b058; /* 8.43:1 */
+  --c-warn-soft: #2c2113; /* warn sobre ele = 8.08:1 */
+  --c-danger: #ff9f94; /* 8.32:1 */
+  --c-danger-soft: #351a18; /* danger sobre ele = 8.11:1 */
+
+  /**
+   * Aqui o glow da referência vale a pena: sobre near-black, um halo ciano dá
+   * profundidade sem custar nada de contraste — ele SOMA luz, não subtrai.
+   * Ainda assim: ornamento com aria-hidden, em área vazia, e jamais atrás do
+   * transcript. Glow não substitui contraste.
+   */
+  --c-glow: rgb(0 176 220 / 0.22);
+  --c-glass-bg: rgb(36 49 65 / 0.55);
+  --c-glass-border: rgb(150 229 249 / 0.16);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 8px 28px rgb(0 0 0 / 0.55), 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-glow: 0 0 0 1px rgb(24 188 228 / 0.45), 0 6px 32px rgb(0 176 220 / 0.28);
+}
+
+/* =============================================================================
+ * PREFERÊNCIAS DO SISTEMA
+ * ========================================================================== */
+
+/**
+ * Quem pede mais contraste no SO recebe mais contraste, não um "modo especial":
+ * o metadado sobe para o nível do corpo, a borda sutil vira borda forte e o
+ * ornamento translúcido fica opaco (translucidez é justamente o que torna a
+ * razão de contraste imprevisível).
+ */
+@media (prefers-contrast: more) {
+  :root {
+    --c-text-3: var(--c-text-2);
+    --c-border: var(--c-border-strong);
+    --c-glass-bg: var(--c-surface);
+    --c-glass-border: var(--c-border-strong);
+    --c-glow: transparent;
+    --shadow-glow: 0 0 0 3px var(--c-focus);
+  }
+}
+
+/* Ornamento e glow são movimento decorativo: somem quando pedem sossego. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition: 0ms;
+  }
+}
